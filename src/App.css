@@ -6,4 +6,5 @@ body{
 
 .App {
   height: 100vh;
+  transition: 0.3s;
 }

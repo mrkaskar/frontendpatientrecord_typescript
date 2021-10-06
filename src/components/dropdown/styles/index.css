@@ -5,12 +5,11 @@
 
 #arrow{
   margin-left: -15px;
-  margin-top: -6px;
   cursor: pointer;
 }
 
 #box{
-  padding-left: 5px;
+ padding-left: 5px;
  border-top-left-radius: 5px;
  border-bottom-left-radius: 5px;
 }
@@ -22,6 +21,7 @@
 #drop{
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 #boxarea {
@@ -30,8 +30,9 @@
   border-radius: 5px; 
   max-height: 300px;
   overflow-y: scroll;
-  margin-top: 2px;
   padding-top: 5px;
+  position: absolute;
+  top: 21px; 
 }
 #boxarea::-webkit-scrollbar {
   width: 0.3em;
@@ -50,4 +51,23 @@
 .listarea{
   margin-left: 3px;
   margin-top: -3px;
+}
+
+#searchlist{
+  border: none;
+  margin-left: 5px;
+  margin-bottom: 3px;
+  border-radius: 5px;
+  width: 90%;
+  font-size: 11px;
+  height: 18px;
+  padding-left: 2px;
+}
+
+#searchlist:focus{
+  outline: none;
+}
+
+#searchlist::placeholder{
+  font-size: 11px;
 }

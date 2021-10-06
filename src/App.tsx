@@ -1,16 +1,11 @@
 import React, { useContext, useEffect } from 'react';
 import './App.css';
-import { Dropdown } from './components';
+import { Dropdown, Toggler } from './components';
 import Colors from './components/global/themes/colors';
 import { ThemeContext } from './components/global/context/ThemeProvider';
 
 function App():JSX.Element {
   const { theme, toggleTheme } = useContext(ThemeContext);
-  useEffect(() => {
-    setTimeout(() => {
-      toggleTheme();
-    }, 5000);
-  }, [toggleTheme]);
   return (
     <div
       className="App"
@@ -18,7 +13,7 @@ function App():JSX.Element {
         backgroundColor: Colors.background[theme],
       }}
     >
-      Hello
+      <Toggler />
       <div
         style={{
           display: 'flex',
@@ -45,6 +40,7 @@ function App():JSX.Element {
         />
 
       </div>
+
     </div>
 
   );

@@ -7,7 +7,6 @@
   display: block;
   margin-top: 4px;
   font-size: 12px;
-  color: #3a3a3a;
   cursor: pointer;
   transition: 0.1s;
   text-align: left;
@@ -15,9 +14,6 @@
   padding-right: 1px;
 }
 
-#clabel:hover{
-  color: #181818;
-}
 
 .checkwrap{
   width: 25px;

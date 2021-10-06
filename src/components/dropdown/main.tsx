@@ -3,6 +3,7 @@ import { ReactComponent as DownArrow } from './assets/arrowicon.svg';
 import './styles/index.css';
 import Checkbox from '../checkbox';
 import colors from '../global/themes/colors';
+import { ThemeContext } from '../global/context/ThemeProvider';
 
 type Check = {
   label: string;
@@ -17,10 +18,25 @@ type TDropdown = {
 
 function Dropdown({ label, width, list }: TDropdown): JSX.Element {
   const [state, setState] = React.useState(false);
+  const { theme } = React.useContext(ThemeContext);
 
-  const { inputback } = colors;
+  const [showlist, setShowlist] = React.useState(list);
+  const [search, setSearch] = React.useState('');
+  const inputRef = React.useRef<null|HTMLInputElement>(null);
 
-  const theme = 'dark';
+  React.useEffect(() => {
+    if (search) {
+      setShowlist(list.filter((l) => l.label.includes(search)));
+    } else {
+      setShowlist(list);
+    }
+  }, [search, list]);
+
+  React.useEffect(() => {
+    inputRef?.current?.focus();
+  }, [state]);
+
+  const { inputback, text } = colors;
 
   const toggle = (e: React.MouseEvent<HTMLDivElement>):void => {
     e.stopPropagation();
@@ -54,10 +70,22 @@ function Dropdown({ label, width, list }: TDropdown): JSX.Element {
       {
         state
       && (
-      <div onClick={preventClose} aria-hidden="true" id="boxarea" style={{ width: width && width + 25 }}>
-
+      <div onClick={preventClose} aria-hidden="true" id="boxarea" style={{ backgroundColor: inputback[theme], width: width && width + 10 }}>
+        <div onClick={preventClose} aria-hidden="true" className="listarea">
+          <div>
+            <input
+              ref={inputRef}
+              style={{ backgroundColor: inputback[theme], color: text[theme] }}
+              id="searchlist"
+              placeholder="Search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              autoComplete="off"
+            />
+          </div>
+        </div>
         {
-          list.map((ele) => (
+          showlist.map((ele) => (
             <div onClick={preventClose} aria-hidden="true" className="listarea">
               <Checkbox label={ele.label} checked={ele.checked} />
             </div>
