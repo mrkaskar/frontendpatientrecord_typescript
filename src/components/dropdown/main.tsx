@@ -33,7 +33,7 @@ function Dropdown({ label, width, list }: TDropdown): JSX.Element {
   }, [search, list]);
 
   React.useEffect(() => {
-    inputRef?.current?.focus();
+    if (state) inputRef?.current?.focus();
   }, [state]);
 
   const { inputback, text } = colors;

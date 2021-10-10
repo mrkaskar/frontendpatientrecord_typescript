@@ -7,12 +7,12 @@ export interface IThemeContext {
   toggleTheme: () => null
 }
 export const ThemeContext = createContext<IThemeContext>({
-  theme: 'dark',
+  theme: 'light',
   toggleTheme: () => null,
 });
 
 function ThemeProvider({ children }:{children: JSX.Element}):JSX.Element {
-  const [theme, setTheme] = React.useState<Theme>('dark');
+  const [theme, setTheme] = React.useState<Theme>('light');
   let toggleTheme = ():null => {
     setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
     return null;

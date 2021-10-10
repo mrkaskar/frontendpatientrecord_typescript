@@ -1,0 +1,33 @@
+#table {
+  display: inline-flex;
+  position: relative;
+  box-shadow: 0px 8px 16px -2px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
+  padding-bottom: 20px;
+}
+
+#headback{
+  background: linear-gradient(90.25deg, #06A2AB -7.01%, #02B6C1 110.82%);
+  border-radius: 15px 15px 0px 0px;
+  height: 56px;
+  width: 100%;
+  position: absolute;
+  z-index: 1;
+}
+
+.columns{
+  margin-right: 30px;
+  margin-top: 20px;
+  margin-left: 20px;
+  z-index: 2;
+}
+
+.header{
+  color:white;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.body{
+  margin-bottom: 10px;
+}
