@@ -15,4 +15,8 @@ export default {
     light: '#3A3A3A',
     dark: '#FFFFFF',
   },
+  lightText: {
+    light: '#595959',
+    dark: '#FFFFFF',
+  },
 };

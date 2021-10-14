@@ -1,0 +1,13 @@
+#button{
+  width: 26px;
+  height: 26px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#button:hover{
+  cursor: pointer; 
+}
+#icon{
+  transform: scale(1.2);
+}

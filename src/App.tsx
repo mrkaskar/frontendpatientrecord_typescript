@@ -23,16 +23,175 @@ function App():JSX.Element {
       />
       <Table
         data={{
-          headers: ['Registration no', 'Name', 'Phone Number', 'Age', 'Address', 'Actions'],
+          headers: ['Reg No.', 'Name', 'Phone', 'Age', 'Address', 'Actions'],
           body: [
             [
-              '01001', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon',
+              '01001', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
             ],
             [
-              '01001', 'John Doe Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon',
+              '01002', 'John Doe 2', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
             ],
             [
-              '01001', 'John Doe Doe Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon',
+              '01003', 'John Doe 3', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01004', 'John Doe 4', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01005', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01006', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01007', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01008', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01009', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '010010', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '010011', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01001', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01002', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01003', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01004', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01005', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01006', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01007', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01008', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01009', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '010010', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '010011', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01001', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01002', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01003', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01004', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01005', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01006', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01007', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01008', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01009', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '010010', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '010011', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01001', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01002', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01003', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01004', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01005', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01006', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01007', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01008', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01009', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '010010', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '010011', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01006', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01007', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01008', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01009', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '010010', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '010011', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01006', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01007', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01008', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '01009', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '010010', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
+            ],
+            [
+              '010011', 'John Doe', '09998888', '21', 'No,222, Mingalar Street, Yangon', 'actions',
             ],
           ],
         }}
