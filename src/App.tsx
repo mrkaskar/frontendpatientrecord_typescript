@@ -1,14 +1,13 @@
 import React, { useContext } from 'react';
 import './App.css';
 import {
-  Modal, Table, TextBox, Toggler,
+  Modal, Table, TextBox, Toggler, Image,
 } from './components';
 import Colors from './components/global/themes/colors';
 import { ThemeContext } from './components/global/context/ThemeProvider';
 
 function App():JSX.Element {
   const { theme } = useContext(ThemeContext);
-  const [modal, setModal] = React.useState(false);
   return (
     <div
       className="App"
@@ -16,16 +15,7 @@ function App():JSX.Element {
         backgroundColor: Colors.background[theme],
       }}
     >
-      {
-      modal && (
-      <Modal
-        closeModal={() => {
-          setModal(false);
-        }}
-      />
-      )
-    }
-      <button type="button" onClick={() => setModal(true)}>Open modal</button>
+      <Image />
       <Toggler />
       <div
         style={{
