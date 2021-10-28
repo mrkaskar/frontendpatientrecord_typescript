@@ -17,10 +17,9 @@ function Image():ReactElement {
 
   const onChange = (
     imageList: ImageListType,
-    addUpdateIndex: number[] | undefined,
+    // addUpdateIndex: number[] | undefined,
   ):void => {
     // data for submit
-    console.log(imageList, addUpdateIndex);
     setImages(imageList);
   };
   return (
@@ -28,18 +27,48 @@ function Image():ReactElement {
       {
         gallery
         && (
-        <div id="gallery">
-          <div id="left">
+        <div
+          id="gallery"
+          aria-hidden="true"
+          onClick={() => setGallery(false)}
+        >
+          <div
+            id="left"
+            aria-hidden="true"
+            onClick={
+              (e) => {
+                e.stopPropagation();
+                if (currentGallery !== 0) {
+                  setCurrentGallery(currentGallery - 1);
+                }
+              }
+            }
+          >
             <Left
               style={{
                 filter: `${theme === 'dark' && 'invert(100%) sepia(0%) saturate(8%) hue-rotate(236deg) brightness(104%) contrast(105%)'}`,
               }}
             />
           </div>
-          <div id="gallery_image">
-            <img className="one_gallery_image" src={images[currentGallery].dataURL} alt="teeth" />
-          </div>
-          <div id="right">
+          <img
+            aria-hidden="true"
+            onClick={(e) => e.stopPropagation()}
+            className="one_gallery_image"
+            src={images[currentGallery].dataURL}
+            alt="teeth"
+          />
+          <div
+            id="right"
+            aria-hidden="true"
+            onClick={
+              (e) => {
+                e.stopPropagation();
+                if (currentGallery < images.length - 1) {
+                  setCurrentGallery(currentGallery + 1);
+                }
+              }
+            }
+          >
             <Right
               style={{
                 filter: `${theme === 'dark' && 'invert(100%) sepia(0%) saturate(8%) hue-rotate(236deg) brightness(104%) contrast(105%)'}`,
@@ -65,10 +94,13 @@ function Image():ReactElement {
             <div id="images_list_area">
               <div id="images">
                 {
-                  imageList.map((img) => (
+                  imageList.map((img, index) => (
                     <div
                       aria-hidden="true"
-                      onClick={() => setGallery((prev) => !prev)}
+                      onClick={() => {
+                        setCurrentGallery(index);
+                        setGallery((prev) => !prev);
+                      }}
                       className="unique_image"
                       key={Math.random()}
                     >

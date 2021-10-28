@@ -1,10 +1,36 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
-body{
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;700&display=swap');
+body {
   font-family: 'Roboto', sans-serif;
 }
 
 .App {
   height: 100vh;
   transition: 0.3s;
+  padding-left: 10%;
+  padding-right: 20%;
+}
+
+#space {
+  display: flex;
+  padding-top: 60px;
+  margin-left: 80px;
+}
+
+#body-space {
+  width: 80%;
+  position: relative;
+  padding-left: 30px;
+  padding-top: 0px;
+}
+#toggler {
+  position: absolute;
+  right: 0;
+  top: -20px;
+}
+
+.board-title {
+  font-weight: bold;
+  display: inline-block;
+  margin-top: 8px;
 }

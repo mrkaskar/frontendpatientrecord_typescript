@@ -1,10 +1,18 @@
 import React, { useContext } from 'react';
 import './App.css';
 import {
-  Modal, Table, TextBox, Toggler, Image,
-} from './components';
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from 'react-router-dom';
 import Colors from './components/global/themes/colors';
+import { Toggler, Navbar } from './components';
 import { ThemeContext } from './components/global/context/ThemeProvider';
+import Dashboard from './screens/large/Dashboard';
+import Patient from './screens/large/Patient';
+import Medication from './screens/large/Medication';
+import Treatment from './screens/large/Treatment';
+import Users from './screens/large/Users';
 
 function App():JSX.Element {
   const { theme } = useContext(ThemeContext);
@@ -15,15 +23,27 @@ function App():JSX.Element {
         backgroundColor: Colors.background[theme],
       }}
     >
-      <Image />
-      <Toggler />
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      />
+      <Router>
+        <div id="space">
+          <div id="nav-space">
+            <Navbar />
+          </div>
+          <div id="body-space">
+            <span id="toggler">
+              <Toggler />
+            </span>
+            <Switch>
+              <Route path="/" exact component={Dashboard} />
+              <Route path="/patient" exact component={Patient} />
+              <Route path="/medication" exact component={Medication} />
+              <Route path="/treatment" exact component={Treatment} />
+              <Route path="/users" exact component={Users} />
+            </Switch>
+          </div>
+        </div>
+      </Router>
+      {/* <Toggler />
+      */}
       {/* <Table
         data={{
           headers: ['Reg No.', 'Name', 'Phone', 'Age', 'Address', 'Actions'],

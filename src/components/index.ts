@@ -5,3 +5,5 @@ export { default as Toggler } from './global/themes';
 export { default as TextBox } from './textbox';
 export { default as Modal } from './modal';
 export { default as Image } from './imageupload';
+export { default as Navbar } from './navbar';
+export { default as Dashcard } from './dashcard';
