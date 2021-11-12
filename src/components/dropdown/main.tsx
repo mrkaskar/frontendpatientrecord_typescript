@@ -23,6 +23,7 @@ function Dropdown({ label, width, list }: TDropdown): JSX.Element {
   const [showlist, setShowlist] = React.useState(list);
   const [search, setSearch] = React.useState('');
   const inputRef = React.useRef<null|HTMLInputElement>(null);
+  const [hover, setHover] = React.useState(false);
 
   React.useEffect(() => {
     if (search) {
@@ -36,7 +37,7 @@ function Dropdown({ label, width, list }: TDropdown): JSX.Element {
     if (state) inputRef?.current?.focus();
   }, [state]);
 
-  const { inputback, text } = colors;
+  const { inputback, text, level1 } = colors;
 
   const toggle = (e: React.MouseEvent<HTMLDivElement>):void => {
     e.stopPropagation();
@@ -48,29 +49,57 @@ function Dropdown({ label, width, list }: TDropdown): JSX.Element {
   };
 
   React.useEffect(() => {
+    const modal = document.getElementById('modal');
     function listener():void {
-      setState(false);
+      if (!hover) {
+        setState(false);
+      }
     }
-    window.addEventListener('click', listener);
-    return () => window.removeEventListener('click', listener);
-  }, []);
+    modal?.addEventListener('click', listener);
+    return () => modal?.removeEventListener('click', listener);
+  }, [hover]);
 
   return (
     <div id="drop">
-      <div id="dropdown">
-        <div aria-hidden="true" onClick={toggle} id="box" style={{ backgroundColor: inputback[theme], width }}>
+      <div
+        id="dropbox"
+        style={{
+          width: `${width}px`,
+        }}
+      >
+        <div
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          aria-hidden="true"
+          onClick={toggle}
+          id="box"
+          style={{ backgroundColor: inputback[theme], width }}
+        >
           <span id="label">
             {label}
           </span>
         </div>
-        <div aria-hidden="true" id="arrow" onClick={toggle}>
+        <div
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          aria-hidden="true"
+          id="arrow"
+          onClick={toggle}
+        >
           <DownArrow />
         </div>
       </div>
       {
         state
       && (
-      <div onClick={preventClose} aria-hidden="true" id="boxarea" style={{ backgroundColor: inputback[theme], width: width && width + 10 }}>
+      <div
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        onClick={preventClose}
+        aria-hidden="true"
+        id="boxarea"
+        style={{ backgroundColor: `${theme === 'light' ? 'white' : level1[theme]}`, width }}
+      >
         <div onClick={preventClose} aria-hidden="true" className="listarea">
           <div>
             <input

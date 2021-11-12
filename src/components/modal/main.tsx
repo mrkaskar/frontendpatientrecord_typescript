@@ -4,10 +4,15 @@ import colors from '../global/themes/colors';
 import { ThemeContext } from '../global/context/ThemeProvider';
 
 interface IModal {
+  header: string
   closeModal:(e:React.MouseEvent<HTMLDivElement>) => void,
+  width: number
+  children: JSX.Element
 }
 
-function Modal({ closeModal }:IModal):ReactElement {
+function Modal({
+  closeModal, children, header, width,
+}:IModal):ReactElement {
   const { theme } = React.useContext(ThemeContext);
 
   return (
@@ -22,16 +27,25 @@ function Modal({ closeModal }:IModal):ReactElement {
         style={{
           backgroundColor: colors.level1[theme],
           color: colors.text[theme],
+          width: `${width}px`,
         }}
         onClick={(e) => e.stopPropagation()}
       >
         <div id="modal__header">
-          Create a patient
+          {header}
+          <span
+            aria-hidden="true"
+            onClick={closeModal}
+            id="close_modal"
+          >
+            X
+
+          </span>
         </div>
         <div
           id="modal__body"
         >
-          Modal body
+          {children}
         </div>
       </div>
 

@@ -4,10 +4,11 @@
   box-shadow: 0px 8px 16px -2px rgba(0, 0, 0, 0.1);
   border-radius: 15px;
   padding-bottom: 50px;
+  margin-bottom: 200px;
 }
 
-#headback{
-  background: linear-gradient(90.25deg, #06A2AB -7.01%, #02B6C1 110.82%);
+#headback {
+  background: linear-gradient(90.25deg, #06a2ab -7.01%, #02b6c1 110.82%);
   border-radius: 15px 15px 0px 0px;
   height: 56px;
   width: 100%;
@@ -15,34 +16,50 @@
   z-index: 1;
 }
 
-.columns{
-  margin-right: 10px;
+.columns {
   margin-top: 20px;
   margin-left: 20px;
   z-index: 2;
 }
 
-.header{
-  color:white;
+.Registration {
+  width: 100px;
+}
+.Name {
+  width: 150px;
+}
+.Age {
+  width: 50px;
+}
+.Phone {
+  width: 100px;
+}
+.Address {
+  width: 400px;
+}
+
+.header {
+  color: white;
   font-weight: bold;
   margin-bottom: 30px;
 }
 
-.body{
+.body {
   overflow: hidden;
-  white-space:nowrap;
+  white-space: nowrap;
   max-width: 400px;
+  min-width: 150px;
   height: 35px;
   text-overflow: ellipsis;
   font-size: 13px;
   line-height: 25px;
 }
 
-.actions{
+.actions {
   display: flex;
 }
 
-#pageP{
+#pageP {
   position: absolute;
   bottom: 0;
   display: flex;
@@ -50,7 +67,7 @@
   margin-bottom: 10px;
   font-size: 14px;
 }
-#pageCount{
+#pageCount {
   position: absolute;
   bottom: 5px;
   right: 10px;
@@ -66,29 +83,29 @@
   font-size: 14px;
   line-height: 20px;
 }
-.p{
+.p {
   margin-right: 5px;
   margin-left: 5px;
   line-height: 28px;
 }
-.p:hover{
+.p:hover {
   cursor: pointer;
 }
 .active {
   color: rgb(126, 126, 255);
 }
 
-#drop{
+#drop {
   display: inline-block;
 }
-#drop:hover{
+#drop:hover {
   cursor: pointer;
 }
-#dropdown{
+#dropdown {
   display: inline-block;
   flex-direction: column;
   position: absolute;
-  top:25px;
+  top: 25px;
   font-size: 14px;
   box-shadow: 0px 8px 16px -2px rgba(0, 0, 0, 0.1);
   width: 75px;
@@ -100,26 +117,26 @@
   transition: 0.5s;
   border-radius: 5px;
 }
-#droplist:hover{
-  color:rgb(146, 146, 255) !important;
+#droplist:hover {
+  color: rgb(146, 146, 255) !important;
   cursor: pointer;
 }
 
-#searchtable{
+#searchtable {
   width: 200px;
   height: 23px;
   padding-left: 5px;
   border-radius: 5px;
   margin: 0 auto;
-  margin-bottom: 5px;
+  margin-bottom: 20px;
   position: relative;
 }
 #searchinput {
-  border:none;
+  border: none;
   font-size: 12px;
   margin-left: 2px;
   position: absolute;
-  top:5px;
+  top: 5px;
 }
 #searchinput:focus {
   outline: none;
@@ -128,5 +145,4 @@
 #searchicon {
   display: inline-block;
   margin-top: 3px;
-
 }

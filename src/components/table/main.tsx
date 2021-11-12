@@ -9,17 +9,24 @@ import { ReactComponent as Prev } from './assets/prev.svg';
 import { ReactComponent as Next } from './assets/next.svg';
 import { ReactComponent as Drop } from './assets/drop.svg';
 import { ReactComponent as Search } from './assets/search.svg';
+import { ReactComponent as Userphoto } from '../../assets/userphoto.svg';
 
 import './styles/index.css';
+import Modal from '../modal';
 
 interface ITable {
   data: {
     headers: string[],
     body: string[][]
   }
+  setDetailModal: React.Dispatch<React.SetStateAction<boolean>>
+  setEditModal: React.Dispatch<React.SetStateAction<boolean>>
+  setDeleteModal: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function Table({ data }:ITable):JSX.Element {
+function Table({
+  data, setDetailModal, setEditModal, setDeleteModal,
+}:ITable):JSX.Element {
   const { theme } = React.useContext(ThemeContext);
   const { headers, body } = data;
   const [perPage, setPerpage] = React.useState(10);
@@ -54,9 +61,11 @@ function Table({ data }:ITable):JSX.Element {
     }
   }, [search, body, currentPage, perPage]);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (pageRef.current) { pageRef.current.style.marginLeft = `-${pageRef.current?.clientWidth / 2}px`; }
-  }, [perPage]);
+    setCurrentPage(1);
+    setPageCount(Math.ceil(body.length / perPage));
+  }, [body.length, perPage]);
 
   React.useEffect(() => {
     const calculatedPagePair = body.slice(perPage * (currentPage - 1), currentPage * perPage);
@@ -102,7 +111,7 @@ function Table({ data }:ITable):JSX.Element {
         <div id="headback" />
         {
         headers.map((head, index) => (
-          <div key={head} className={`columns ${head} ${index === 0 && 'head'}`}>
+          <div key={head} className={`columns ${head.replace(/\s/g, '')} ${index === 0 && 'head'}`}>
             <div className="header">
               {head}
             </div>
@@ -132,6 +141,7 @@ function Table({ data }:ITable):JSX.Element {
                       Icon={Magnify}
                       colorOne="#9367F1"
                       colorTwo="#BD91F5"
+                      onClick={() => setDetailModal(true)}
                     />
                     <div style={{ width: '10px' }} />
                     <Button
@@ -221,7 +231,7 @@ function Table({ data }:ITable):JSX.Element {
           </div>
           {
           drop
-        && pageCount > 1 ? (
+        && body.length > 10 ? (
           <div id="dropdown">
             {
           Array.from({ length: Math.ceil(allCount / 10) }, (_, i) => i * 10 + 10).map((n) => {

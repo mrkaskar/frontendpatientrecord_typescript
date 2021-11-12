@@ -29,6 +29,8 @@ function TextBox({ label, width }: ITextBox):ReactElement {
           backgroundColor: colors.inputback[theme],
           color: colors.text[theme],
         }}
+        spellCheck={false}
+        autoComplete="off"
       />
     </div>
   );

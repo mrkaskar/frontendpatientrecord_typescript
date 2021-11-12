@@ -25,7 +25,7 @@ function Image():ReactElement {
   return (
     <div>
       {
-        gallery
+        gallery && images.length > 0
         && (
         <div
           id="gallery"
@@ -44,19 +44,20 @@ function Image():ReactElement {
               }
             }
           >
-            <Left
-              style={{
-                filter: `${theme === 'dark' && 'invert(100%) sepia(0%) saturate(8%) hue-rotate(236deg) brightness(104%) contrast(105%)'}`,
-              }}
+            <Left />
+          </div>
+          <div className="galleryArea">
+            <div className="removeGallery">
+              X
+            </div>
+            <img
+              aria-hidden="true"
+              onClick={(e) => e.stopPropagation()}
+              className="one_gallery_image"
+              src={images[currentGallery].dataURL}
+              alt="teeth"
             />
           </div>
-          <img
-            aria-hidden="true"
-            onClick={(e) => e.stopPropagation()}
-            className="one_gallery_image"
-            src={images[currentGallery].dataURL}
-            alt="teeth"
-          />
           <div
             id="right"
             aria-hidden="true"
@@ -69,11 +70,7 @@ function Image():ReactElement {
               }
             }
           >
-            <Right
-              style={{
-                filter: `${theme === 'dark' && 'invert(100%) sepia(0%) saturate(8%) hue-rotate(236deg) brightness(104%) contrast(105%)'}`,
-              }}
-            />
+            <Right />
           </div>
         </div>
         )
@@ -88,6 +85,7 @@ function Image():ReactElement {
           ({
             imageList,
             onImageUpload,
+            onImageRemove,
             dragProps,
             isDragging,
           }) => (
@@ -104,6 +102,13 @@ function Image():ReactElement {
                       className="unique_image"
                       key={Math.random()}
                     >
+                      <div
+                        aria-hidden="true"
+                        onClick={(e) => { e.stopPropagation(); onImageRemove(index); }}
+                        className="removeImage"
+                      >
+                        X
+                      </div>
                       <img className="one_image" src={img.dataURL} alt="teeth" />
                     </div>
                   ))

@@ -91,6 +91,10 @@ function Navbar():ReactElement {
             active={pathname === users}
           />
         </Link>
+        <div style={{
+          height: '200px',
+        }}
+        />
         <Navitem
           Icon={Logout}
           label="Logout"

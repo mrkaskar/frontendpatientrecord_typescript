@@ -1,0 +1,161 @@
+#create-patient-body {
+  margin-top: 10px;
+  display: flex;
+}
+
+#patient-form {
+  display: flex;
+  flex-wrap: wrap;
+  width: 70%;
+}
+
+#patient-phone {
+  margin-left: 30px;
+}
+#patient-age {
+  margin-left: 30px;
+}
+.text-form {
+  margin-bottom: 10px;
+}
+
+#patient-cost {
+  display: flex;
+  flex-direction: column;
+  width: 20%;
+  align-items: center;
+}
+
+#total-cost {
+  font-weight: bold;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+#cost {
+  font-weight: bold;
+  font-size: 16px;
+  color: #41b871;
+  text-align: center;
+  margin-top: 5px;
+}
+.label {
+  font-size: 12px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+.treatments {
+  font-size: 12px;
+}
+
+.treatment-name {
+  margin-right: 20px;
+}
+
+.treatment-cost {
+  font-weight: bold;
+}
+
+.atreatment {
+  margin-top: 5px;
+}
+.chosen-treatment {
+  margin-left: 50px;
+}
+
+#treatment-area {
+  display: flex;
+}
+
+.meds {
+  font-size: 12px;
+}
+
+.med-name {
+  margin-right: 20px;
+}
+
+.med-cost {
+  font-weight: bold;
+}
+
+.amed {
+  margin-top: 5px;
+}
+
+#med-area {
+  display: flex;
+  margin-top: 50px;
+}
+
+#img-area {
+  margin-top: 50px;
+}
+
+.chosen-med {
+  margin-left: 50px;
+}
+
+.med-unit-count {
+  border: none;
+  width: 50px;
+  margin-right: 20px;
+}
+.med-unit-count:focus {
+  outline: none;
+  box-shadow: 0 0 1px 1px #34ff55;
+}
+
+#detail-patient-body {
+  display: flex;
+  margin-top: 20px;
+}
+
+#user-photo {
+  text-align: center;
+  width: 30%;
+}
+
+#user-info-1 {
+  width: 20%;
+}
+
+#user-info-2 {
+  width: 50%;
+}
+
+.detail-label {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 5px;
+  text-decoration: underline;
+}
+
+.detail-info {
+  font-size: 13px;
+  margin-bottom: 10px;
+  display: flex;
+}
+
+.tname {
+  flex: 1;
+}
+.tcost {
+  flex: 1;
+  font-weight: bold;
+}
+
+.mname {
+  width: 30%;
+}
+
+.munit {
+  width: 20%;
+}
+
+.mcost {
+  width: 20%;
+  font-weight: bold;
+}
