@@ -205,12 +205,6 @@ function CreateModal({ modal, setModal }:ICreateModal):ReactElement {
                 color2="#61F2A7"
                 label="Save"
               />
-              <Button
-                onClick={() => alert('save')}
-                color1="#7E7E7E"
-                color2="#BCBCBC"
-                label="Cancel"
-              />
             </div>
           </div>
         </div>

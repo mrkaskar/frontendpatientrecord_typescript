@@ -6,6 +6,7 @@ function UsersTable():ReactElement {
   const [detailModal, setDetailModal] = React.useState(false);
   const [editModal, setEditModal] = React.useState(false);
   const [deleteModal, setDeleteModal] = React.useState(false);
+  const [detailIndex, setDetailIndex] = React.useState(0);
   const [chosenTreatment, setChosenTreatment] = React.useState({
 
   });
@@ -15,6 +16,7 @@ function UsersTable():ReactElement {
         setDetailModal={setDetailModal}
         setEditModal={setEditModal}
         setDeleteModal={setDetailModal}
+        setDetailIndex={setDetailIndex}
         data={{
           headers: ['Email', 'Username', 'Type', 'Actions'],
           body: [

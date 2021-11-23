@@ -3,11 +3,10 @@
 import React, { ReactElement } from 'react';
 import ImageUploading, { ImageListType } from 'react-images-uploading';
 import { ReactComponent as Add } from './assets/add.svg';
-import { ReactComponent as Left } from './assets/left.svg';
-import { ReactComponent as Right } from './assets/right.svg';
 import './styles/index.css';
 import colors from '../global/themes/colors';
 import { ThemeContext } from '../global/context/ThemeProvider';
+import Gallery from '../gallery';
 
 function Image():ReactElement {
   const { theme } = React.useContext(ThemeContext);
@@ -27,52 +26,13 @@ function Image():ReactElement {
       {
         gallery && images.length > 0
         && (
-        <div
-          id="gallery"
-          aria-hidden="true"
-          onClick={() => setGallery(false)}
-        >
-          <div
-            id="left"
-            aria-hidden="true"
-            onClick={
-              (e) => {
-                e.stopPropagation();
-                if (currentGallery !== 0) {
-                  setCurrentGallery(currentGallery - 1);
-                }
-              }
-            }
-          >
-            <Left />
-          </div>
-          <div className="galleryArea">
-            <div className="removeGallery">
-              X
-            </div>
-            <img
-              aria-hidden="true"
-              onClick={(e) => e.stopPropagation()}
-              className="one_gallery_image"
-              src={images[currentGallery].dataURL}
-              alt="teeth"
-            />
-          </div>
-          <div
-            id="right"
-            aria-hidden="true"
-            onClick={
-              (e) => {
-                e.stopPropagation();
-                if (currentGallery < images.length - 1) {
-                  setCurrentGallery(currentGallery + 1);
-                }
-              }
-            }
-          >
-            <Right />
-          </div>
-        </div>
+        <Gallery
+          img={images[currentGallery].dataURL}
+          setGallery={setGallery}
+          currentGallery={currentGallery}
+          setCurrentGallery={setCurrentGallery}
+          imgCount={images.length}
+        />
         )
       }
       <ImageUploading

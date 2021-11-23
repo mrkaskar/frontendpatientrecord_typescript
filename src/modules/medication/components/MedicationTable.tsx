@@ -5,6 +5,7 @@ import DetailModal from '../../patient/components/DetailModal';
 function MedicationTable():ReactElement {
   const [detailModal, setDetailModal] = React.useState(false);
   const [editModal, setEditModal] = React.useState(false);
+  const [detailIndex, setDetailIndex] = React.useState(0);
   const [deleteModal, setDeleteModal] = React.useState(false);
   const [chosenTreatment, setChosenTreatment] = React.useState({
 
@@ -15,6 +16,7 @@ function MedicationTable():ReactElement {
         setDetailModal={setDetailModal}
         setEditModal={setEditModal}
         setDeleteModal={setDetailModal}
+        setDetailIndex={setDetailIndex}
         data={{
           headers: ['Medicine Code', 'Medicine Name', 'In Stock', 'Price per unit', 'Actions'],
           body: [

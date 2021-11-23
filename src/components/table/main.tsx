@@ -22,10 +22,11 @@ interface ITable {
   setDetailModal: React.Dispatch<React.SetStateAction<boolean>>
   setEditModal: React.Dispatch<React.SetStateAction<boolean>>
   setDeleteModal: React.Dispatch<React.SetStateAction<boolean>>
+  setDetailIndex: React.Dispatch<React.SetStateAction<number>>
 }
 
 function Table({
-  data, setDetailModal, setEditModal, setDeleteModal,
+  data, setDetailModal, setEditModal, setDeleteModal, setDetailIndex,
 }:ITable):JSX.Element {
   const { theme } = React.useContext(ThemeContext);
   const { headers, body } = data;
@@ -141,7 +142,10 @@ function Table({
                       Icon={Magnify}
                       colorOne="#9367F1"
                       colorTwo="#BD91F5"
-                      onClick={() => setDetailModal(true)}
+                      onClick={() => {
+                        setDetailIndex(i);
+                        setDetailModal(true);
+                      }}
                     />
                     <div style={{ width: '10px' }} />
                     <Button
@@ -272,5 +276,4 @@ function Table({
     </div>
   );
 }
-
 export default Table;

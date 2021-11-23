@@ -3,28 +3,45 @@ import { Modal } from '../../../components';
 import { ReactComponent as Userphoto } from '../../../assets/userphoto.svg';
 import colors from '../../../components/global/themes/colors';
 import { ThemeContext } from '../../../components/global/context/ThemeProvider';
+import Gallery from '../../../components/gallery';
 
 interface IDetailModal {
   setDetailModal: React.Dispatch<React.SetStateAction<boolean>>
   userdata : {
     name: string
     phone: string
-    age: number
+    age: string
     address: string
     reg: string
     takenTreatment: {tname: string, cost: number}[]
     medicine: {mname: string, munit: number, cost: number}[]
+    images: string[]
   }
 }
 
 function DetailModal({ setDetailModal, userdata }: IDetailModal):ReactElement {
   const { theme } = React.useContext(ThemeContext);
   const {
-    name, phone, age, address, reg, takenTreatment, medicine,
+    name, phone, age, address, reg, takenTreatment, medicine, images,
   } = userdata;
+
+  const [gallery, setGallery] = React.useState(false);
+  const [currentGallery, setCurrentGallery] = React.useState(0);
 
   return (
     <div>
+      {
+        gallery && images.length > 0
+        && (
+        <Gallery
+          img={images[currentGallery]}
+          setGallery={setGallery}
+          currentGallery={currentGallery}
+          setCurrentGallery={setCurrentGallery}
+          imgCount={images.length}
+        />
+        )
+      }
       <Modal
         width={1100}
         header="Patient Detail"
@@ -96,6 +113,9 @@ function DetailModal({ setDetailModal, userdata }: IDetailModal):ReactElement {
                 className="detail-info"
                 style={{
                   color: colors.text[theme],
+                  width: '200px',
+                  wordBreak: 'break-all',
+
                 }}
               >
                 {address}
@@ -220,7 +240,34 @@ function DetailModal({ setDetailModal, userdata }: IDetailModal):ReactElement {
             >
               Images
             </div>
-
+            <div
+              style={{
+                display: 'flex',
+                gap: '10px',
+                marginLeft: '50px',
+              }}
+            >
+              {
+                  images.map((img, index) => (
+                    <div
+                      style={{
+                        width: '450px',
+                      }}
+                      aria-hidden="true"
+                      onClick={() => {
+                        setCurrentGallery(index);
+                        setGallery((prev) => !prev);
+                      }}
+                    >
+                      <img
+                        style={{ width: '100%', objectFit: 'contain' }}
+                        alt="patient teeth"
+                        src={img}
+                      />
+                    </div>
+                  ))
+                }
+            </div>
           </div>
 
         </div>

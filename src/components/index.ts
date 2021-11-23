@@ -8,3 +8,4 @@ export { default as Image } from './imageupload';
 export { default as Navbar } from './navbar';
 export { default as Dashcard } from './dashcard';
 export { default as Button } from './button';
+export { default as Loader } from './loading';
