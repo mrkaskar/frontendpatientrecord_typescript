@@ -1,14 +1,22 @@
 import React, { ReactElement } from 'react';
 import { Table } from '../../../components';
 import DetailModal from '../../patient/components/DetailModal';
+import { getAllMed } from '../api/apiFunctions';
 
 function MedicationTable():ReactElement {
   const [detailModal, setDetailModal] = React.useState(false);
   const [editModal, setEditModal] = React.useState(false);
   const [detailIndex, setDetailIndex] = React.useState(0);
   const [deleteModal, setDeleteModal] = React.useState(false);
-  const [chosenTreatment, setChosenTreatment] = React.useState({
-
+  const [chosenMed, setChosenMed] = React.useState<{
+        medcode: string;
+        naem: string;
+        price: string;
+        stock: string;
+ }>();
+  const [data, setData] = React.useState<{headers:string[], body:string[][]}>({
+    headers: ['Medicine Code', 'Medicine Name', 'In Stock', 'Price per unit', 'Actions'],
+    body: [[]],
   });
   return (
     <div>

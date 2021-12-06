@@ -11,7 +11,7 @@ function PatientTable():ReactElement {
   const [editModal, setEditModal] = React.useState(false);
   const [deleteModal, setDeleteModal] = React.useState(false);
   const allpatient = useQuery('patients', getAllPatient);
-  const [detailIndex, setDetailIndex] = React.useState(0);
+  const [detailIndex, setDetailIndex] = React.useState(-1);
   const [data, setData] = React.useState<{headers:string[], body:string[][]}>({
     headers: ['Registration', 'Name', 'Phone', 'Age', 'Address', 'Actions'],
     body: [[]],
@@ -47,27 +47,29 @@ function PatientTable():ReactElement {
   }, [allpatient.data, data, detailIndex]);
 
   React.useEffect(() => {
-    const patient = data.body[detailIndex];
-    console.log(`Set chosen index ${detailIndex}`);
-    setChosen(
-      {
-        name: patient[1],
-        phone: patient[2],
-        age: patient[3],
-        address: patient[4],
-        reg: patient[5],
-        takenTreatment: [
-          { tname: 'Acylic teeth', cost: 10000 },
-          { tname: 'Cad Cam PFZ', cost: 5000 }],
-        medicine: [
-          { mname: 'Acylic teeth', munit: 3, cost: 3000 },
-          { mname: 'Cad Cam PFZ', munit: 5, cost: 5000 }],
-        images: ['https://www.kanelov.com/wp-content/uploads/2019/06/1Print-1-24.jpg',
-          'https://thumbs.dreamstime.com/b/amazing-misty-autumn-scenery-lake-sorapis-dolomites-italy-beautiful-mountains-colorful-yellow-larches-shore-193683774.jpg',
-        ],
-      },
+    if (detailIndex >= 0) {
+      const patient = data.body[detailIndex];
+      console.log(`Set chosen index ${detailIndex}`);
+      setChosen(
+        {
+          name: patient[1],
+          phone: patient[2],
+          age: patient[3],
+          address: patient[4],
+          reg: patient[5],
+          takenTreatment: [
+            { tname: 'Acylic teeth', cost: 10000 },
+            { tname: 'Cad Cam PFZ', cost: 5000 }],
+          medicine: [
+            { mname: 'Acylic teeth', munit: 3, cost: 3000 },
+            { mname: 'Cad Cam PFZ', munit: 5, cost: 5000 }],
+          images: ['https://www.kanelov.com/wp-content/uploads/2019/06/1Print-1-24.jpg',
+            'https://thumbs.dreamstime.com/b/amazing-misty-autumn-scenery-lake-sorapis-dolomites-italy-beautiful-mountains-colorful-yellow-larches-shore-193683774.jpg',
+          ],
+        },
 
-    );
+      );
+    }
   }, [data.body, detailIndex]);
 
   return (
