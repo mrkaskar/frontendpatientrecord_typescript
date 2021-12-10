@@ -113,7 +113,7 @@ function DetailModal({ setDetailModal, userdata }: IDetailModal):ReactElement {
                 className="detail-info"
                 style={{
                   color: colors.text[theme],
-                  width: '200px',
+                  width: '300px',
                   wordBreak: 'break-all',
 
                 }}

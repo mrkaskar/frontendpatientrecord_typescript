@@ -1,11 +1,8 @@
 import React, { ReactElement } from 'react';
 import {
-  Button, Dropdown, Modal, TextBox,
+  Button, Modal,
 } from '../../../components';
 import { ReactComponent as Save } from '../../../assets/save.svg';
-import Imageupload from '../../../components/imageupload';
-import colors from '../../../components/global/themes/colors';
-import { ThemeContext } from '../../../components/global/context/ThemeProvider';
 import Textbox from '../../../components/textbox';
 
 interface ICreateModal {
@@ -13,7 +10,6 @@ interface ICreateModal {
   setModal: React.Dispatch<React.SetStateAction<boolean>>
 }
 function CreateModal({ modal, setModal }:ICreateModal):ReactElement {
-  const { theme } = React.useContext(ThemeContext);
   return (
     <div>
       {
@@ -55,7 +51,7 @@ function CreateModal({ modal, setModal }:ICreateModal):ReactElement {
             }}
           >
             <Button
-              onClick={() => alert('save')}
+              onClick={() => 3}
               Icon={Save}
               color1="#53BB85"
               color2="#61F2A7"

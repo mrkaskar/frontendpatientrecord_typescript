@@ -2,6 +2,7 @@ import axios from 'axios';
 import { url } from '../../../helpers/api/backend';
 
 export interface ITreatment {
+  id: string;
   trecode: string;
   name: string;
   charge: string;

@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { ReactElement } from 'react';
 import { Table } from '../../../components';
-import DetailModal from '../../patient/components/DetailModal';
 
 function UsersTable():ReactElement {
   const [detailModal, setDetailModal] = React.useState(false);

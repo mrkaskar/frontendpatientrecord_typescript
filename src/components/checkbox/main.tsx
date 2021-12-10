@@ -7,7 +7,7 @@ import { ThemeContext } from '../global/context/ThemeProvider';
 
 type TCheckbox = {
   checked?: boolean;
-  label: string
+  label: string;
 }
 function Checkbox({ checked, label }:TCheckbox): JSX.Element {
   const [check, setCheck] = React.useState(checked);

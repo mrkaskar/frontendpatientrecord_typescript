@@ -5,20 +5,18 @@ body {
 }
 
 .App {
-  min-height: 100vh;
   transition: 0.3s;
-  padding-left: 10%;
-  padding-right: 20%;
+  padding-left: 3%;
+  height: 100vh;
+  overflow: auto;
 }
 
 #space {
   display: flex;
-  padding-top: 60px;
-  margin-left: 80px;
+  padding-top: 20px;
 }
 
 #body-space {
-  width: 80%;
   position: relative;
   padding-left: 30px;
   padding-top: 0px;

@@ -1,15 +1,14 @@
 import React, { ReactElement } from 'react';
 import { useQuery } from 'react-query';
-import { pathToFileURL } from 'url';
-import { Loader, Modal, Table } from '../../../components';
-import { ReactComponent as Userphoto } from '../../../assets/userphoto.svg';
+import { Loader, Table } from '../../../components';
 import DetailModal from './DetailModal';
 import { getAllPatient } from '../api/apiFunctions';
 
 function PatientTable():ReactElement {
   const [detailModal, setDetailModal] = React.useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [editModal, setEditModal] = React.useState(false);
-  const [deleteModal, setDeleteModal] = React.useState(false);
+  // const [deleteModal, setDeleteModal] = React.useState(false);
   const allpatient = useQuery('patients', getAllPatient);
   const [detailIndex, setDetailIndex] = React.useState(-1);
   const [data, setData] = React.useState<{headers:string[], body:string[][]}>({
@@ -49,22 +48,21 @@ function PatientTable():ReactElement {
   React.useEffect(() => {
     if (detailIndex >= 0) {
       const patient = data.body[detailIndex];
-      console.log(`Set chosen index ${detailIndex}`);
       setChosen(
         {
           name: patient[1],
           phone: patient[2],
           age: patient[3],
           address: patient[4],
-          reg: patient[5],
+          reg: patient[0],
           takenTreatment: [
-            { tname: 'Acylic teeth', cost: 10000 },
-            { tname: 'Cad Cam PFZ', cost: 5000 }],
+            { tname: 'Metal brace Orthodontic', cost: 10000 },
+            { tname: 'Recementation', cost: 5000 }],
           medicine: [
-            { mname: 'Acylic teeth', munit: 3, cost: 3000 },
-            { mname: 'Cad Cam PFZ', munit: 5, cost: 5000 }],
-          images: ['https://www.kanelov.com/wp-content/uploads/2019/06/1Print-1-24.jpg',
-            'https://thumbs.dreamstime.com/b/amazing-misty-autumn-scenery-lake-sorapis-dolomites-italy-beautiful-mountains-colorful-yellow-larches-shore-193683774.jpg',
+            { mname: 'Amoxicillin', munit: 3, cost: 3000 },
+            { mname: 'Penciclovir', munit: 5, cost: 5000 }],
+          images: ['https://somersetdental.com.au/wp-content/uploads/2016/12/Do-I-Need-A-Tooth-Extraction.jpg',
+            'https://somersetdental.com.au/wp-content/uploads/2016/12/Do-I-Need-A-Tooth-Extraction.jpg',
           ],
         },
 

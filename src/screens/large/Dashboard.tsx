@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Button, Dashcard } from '../../components';
+import { Dashcard } from '../../components';
 import { ThemeContext } from '../../components/global/context/ThemeProvider';
 import colors from '../../components/global/themes/colors';
 import { ReactComponent as Users } from '../../assets/user.svg';

@@ -6,6 +6,7 @@ import colors from '../global/themes/colors';
 import { ThemeContext } from '../global/context/ThemeProvider';
 
 type Check = {
+  id: string;
   label: string;
   checked: boolean;
 }
@@ -14,9 +15,12 @@ type TDropdown = {
   label: string;
   width?: number;
   list: Check[];
-}
+  setAction: (id:string, action: boolean) => void;
+  }
 
-function Dropdown({ label, width, list }: TDropdown): JSX.Element {
+function Dropdown({
+  label, width, list, setAction,
+}: TDropdown): JSX.Element {
   const [state, setState] = React.useState(false);
   const { theme } = React.useContext(ThemeContext);
 
@@ -27,7 +31,7 @@ function Dropdown({ label, width, list }: TDropdown): JSX.Element {
 
   React.useEffect(() => {
     if (search) {
-      setShowlist(list.filter((l) => l.label.includes(search)));
+      setShowlist(list.filter((l) => l.label.toLowerCase().includes(search.toLowerCase())));
     } else {
       setShowlist(list);
     }
@@ -115,7 +119,15 @@ function Dropdown({ label, width, list }: TDropdown): JSX.Element {
         </div>
         {
           showlist.map((ele) => (
-            <div onClick={preventClose} aria-hidden="true" className="listarea">
+            <div
+              key={Date.now() + (Math.random() * 10)}
+              onClick={(e) => {
+                preventClose(e);
+                setAction(ele.id, !ele.checked);
+              }}
+              aria-hidden="true"
+              className="listarea"
+            >
               <Checkbox label={ele.label} checked={ele.checked} />
             </div>
           ))

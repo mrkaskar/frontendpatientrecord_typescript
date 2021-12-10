@@ -1,7 +1,4 @@
 import React, { ReactElement } from 'react';
-import {
-  Dropdown, Modal, Table, TextBox,
-} from '../../components';
 import { ThemeContext } from '../../components/global/context/ThemeProvider';
 import colors from '../../components/global/themes/colors';
 import { ReactComponent as Add } from '../../assets/addpatient.svg';

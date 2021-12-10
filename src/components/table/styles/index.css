@@ -35,13 +35,14 @@
   width: 100px;
 }
 .Address {
-  width: 400px;
+  width: 300px;
 }
 
 .header {
   color: white;
   font-weight: bold;
   margin-bottom: 30px;
+  font-size: 14px;
 }
 
 .body {

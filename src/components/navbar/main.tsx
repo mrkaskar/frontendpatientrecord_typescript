@@ -92,7 +92,7 @@ function Navbar():ReactElement {
           />
         </Link>
         <div style={{
-          height: '200px',
+          height: '150px',
         }}
         />
         <Navitem

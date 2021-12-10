@@ -2,6 +2,7 @@ import axios from 'axios';
 import { url } from '../../../helpers/api/backend';
 
 export interface IMed {
+  id: string;
   medcode: string;
   name: string;
   price: string;

@@ -9,10 +9,8 @@ import { ReactComponent as Prev } from './assets/prev.svg';
 import { ReactComponent as Next } from './assets/next.svg';
 import { ReactComponent as Drop } from './assets/drop.svg';
 import { ReactComponent as Search } from './assets/search.svg';
-import { ReactComponent as Userphoto } from '../../assets/userphoto.svg';
 
 import './styles/index.css';
-import Modal from '../modal';
 
 interface ITable {
   data: {
@@ -32,14 +30,17 @@ function Table({
   const { headers, body } = data;
   const [perPage, setPerpage] = React.useState(10);
   const [pageCount, setPageCount] = React.useState(Math.ceil(body.length / perPage));
-  const [allCount, setAllcount] = React.useState(body.length);
+  const [allCount, setAllcount] = React.useState(0);
   const pageRef = React.useRef<HTMLDivElement>(null);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [currentItems, setCurrentItems] = React.useState(body.slice(0, perPage));
   const [drop, setDrop] = React.useState(false);
   const [search, setSearch] = React.useState('');
 
+  React.useEffect(() => { setAllcount(body.length); }, [body.length]);
+
   React.useEffect(() => {
+    setCurrentPage(1);
     if (search) {
       setDrop(false);
       setPerpage(10);
@@ -56,11 +57,14 @@ function Table({
       setAllcount(found.length);
       const calculatedPagePair = found.slice(perPage * (currentPage - 1), currentPage * perPage);
       setCurrentItems(calculatedPagePair);
-    } else {
+    } else if (search.length === 0) {
       const calculatedPagePair = body.slice(perPage * (currentPage - 1), currentPage * perPage);
       setCurrentItems(calculatedPagePair);
+      setPageCount(Math.ceil(body.length / perPage));
+      setAllcount(body.length);
     }
-  }, [search, body, currentPage, perPage]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
 
   React.useLayoutEffect(() => {
     if (pageRef.current) { pageRef.current.style.marginLeft = `-${pageRef.current?.clientWidth / 2}px`; }
@@ -122,7 +126,7 @@ function Table({
                 if (body[i] && body[i][index] !== 'actions') {
                   return (
                     <div
-                      key={`${Math.random()}`}
+                      key={`${Math.random() + Date.now()}`}
                       className="body"
                       style={{
                         color: colors.text[theme],
@@ -152,12 +156,14 @@ function Table({
                       Icon={Pencil}
                       colorOne="#6785F1"
                       colorTwo="#91C5F5"
+                      onClick={() => setEditModal(true)}
                     />
                     <div style={{ width: '10px' }} />
                     <Button
                       Icon={Bin}
                       colorOne="#F16767"
                       colorTwo="#F5A991"
+                      onClick={() => setDeleteModal(true)}
                     />
                   </div>
                 );
@@ -255,7 +261,9 @@ function Table({
                 </div>
               );
             }
-            return null;
+            return (
+              null
+            );
           })
 
         }

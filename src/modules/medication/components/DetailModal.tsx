@@ -3,17 +3,18 @@ import { Modal } from '../../../components';
 
 interface IDetailModal {
   setDetailModal: React.Dispatch<React.SetStateAction<boolean>>
-  treatmentdata : {
-    trecode: string;
+  med : {
+    medcode: string;
     name: string;
-    charge: string;
+    price: string;
+    stock: string;
   }
 }
 
-function DetailModal({ setDetailModal, treatmentdata }: IDetailModal):ReactElement {
+function DetailModal({ setDetailModal, med }: IDetailModal):ReactElement {
   const {
-    trecode, name, charge,
-  } = treatmentdata;
+    medcode, name, price, stock,
+  } = med;
 
   return (
     <div>
@@ -33,26 +34,32 @@ function DetailModal({ setDetailModal, treatmentdata }: IDetailModal):ReactEleme
               textDecoration: 'underline',
             }}
             >
-              Treatement Code
+              Medicine Code
 
             </h4>
-            <p>{trecode}</p>
+            <p>{medcode}</p>
             <h4 style={{
               textDecoration: 'underline',
             }}
             >
-              Treatement Name
-
+              Medicine Name
             </h4>
             <p>{name}</p>
             <h4 style={{
               textDecoration: 'underline',
             }}
             >
-              Charge Amount
-
+              Medicine Price
             </h4>
-            <p>{charge}</p>
+            <p>{price}</p>
+
+            <h4 style={{
+              textDecoration: 'underline',
+            }}
+            >
+              Medicine In Stock
+            </h4>
+            <p>{stock}</p>
           </div>
 
         </div>

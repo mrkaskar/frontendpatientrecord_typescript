@@ -6,8 +6,9 @@ import DetailModal from './DetailModal';
 
 function TreatmentTable():ReactElement {
   const [detailModal, setDetailModal] = React.useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [editModal, setEditModal] = React.useState(false);
-  const [deleteModal, setDeleteModal] = React.useState(false);
+  // const [deleteModal, setDeleteModal] = React.useState(false);
   const [detailIndex, setDetailIndex] = React.useState(0);
   const alltreatment = useQuery('treatment', getAllTreatment);
   const [chosenTreatment, setChosenTreatment] = React.useState<
@@ -29,7 +30,7 @@ function TreatmentTable():ReactElement {
         treatments.push([
           treatment.trecode,
           treatment.name,
-          treatment.charge,
+          `${treatment.charge} MMK`,
           'actions',
         ]);
       });
@@ -40,12 +41,11 @@ function TreatmentTable():ReactElement {
   React.useEffect(() => {
     if (detailIndex >= 0) {
       const treatment = data.body[detailIndex];
-      console.log(`Set chosen index ${detailIndex}`);
       setChosenTreatment(
         {
-          trecode: treatment[1],
-          name: treatment[2],
-          charge: treatment[3],
+          trecode: treatment[0],
+          name: treatment[1],
+          charge: treatment[2],
         },
 
       );
