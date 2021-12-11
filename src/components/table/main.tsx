@@ -29,6 +29,7 @@ function Table({
 }:ITable):JSX.Element {
   const { theme } = React.useContext(ThemeContext);
   const { headers, body } = data;
+
   const [perPage, setPerpage] = React.useState(10);
   const [pageCount, setPageCount] = React.useState(Math.ceil(body.length / perPage));
   const [allCount, setAllcount] = React.useState(0);
@@ -41,8 +42,11 @@ function Table({
   React.useEffect(() => { setAllcount(body.length); }, [body.length]);
   React.useEffect(() => {
     clearTimeout(timeout);
+    setCurrentPage(1);
+    setDrop(false);
+    setPerpage(10);
     if (!search) {
-      const calculatedPagePair = body.slice(perPage * (currentPage - 1), currentPage * perPage);
+      const calculatedPagePair = body.slice(0, 10);
       setCurrentItems(calculatedPagePair);
       setPageCount(Math.ceil(body.length / perPage));
       setAllcount(body.length);
@@ -53,18 +57,14 @@ function Table({
       body.forEach((bodyData) => {
         for (let i = 0; i < bodyData.length; i += 1) {
           if (bodyData[i].toLowerCase().includes(search.toLowerCase())) {
-            if (bodyData[i]) { found.push(bodyData); }
+            found.push(bodyData);
             break;
           }
         }
       });
-
-      setCurrentPage(1);
-      setDrop(false);
-      setPerpage(10);
       setPageCount(Math.ceil(found.length / perPage));
       setAllcount(found.length);
-      const calculatedPagePair = found.slice(perPage * (currentPage - 1), currentPage * perPage);
+      const calculatedPagePair = found.slice(0, 10);
       setCurrentItems(calculatedPagePair);
     }, 200);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -76,10 +76,11 @@ function Table({
     setPageCount(Math.ceil(body.length / perPage));
   }, [body.length, perPage]);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const calculatedPagePair = body.slice(perPage * (currentPage - 1), currentPage * perPage);
     setCurrentItems(calculatedPagePair);
-  }, [currentPage, body, perPage]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [body.length]);
 
   return (
     <div id="thetable">
@@ -130,7 +131,7 @@ function Table({
                 if (body[i] && body[i][index] !== 'actions') {
                   return (
                     <div
-                      key={`${Math.random() + Date.now()}`}
+                      key={`${Math.random() + Date.now() + Math.random()}`}
                       className="body"
                       style={{
                         color: colors.text[theme],
@@ -143,7 +144,7 @@ function Table({
 
                 return (
                   <div
-                    key={`${Math.random()}`}
+                    key={`${Math.random() + Date.now()}`}
                     className="actions body"
                   >
                     <Button
@@ -210,7 +211,15 @@ function Table({
           >
             {
           Array.from({ length: pageCount }, (_, i) => (
-            <span aria-hidden="true" onClick={() => setCurrentPage(i + 1)} className={`p ${currentPage === i + 1 && 'active'}`}>{i + 1}</span>
+            <span
+              key={`${Math.random()}`}
+              aria-hidden="true"
+              onClick={() => setCurrentPage(i + 1)}
+              className={`p ${currentPage === i + 1 && 'active'}`}
+            >
+              {i + 1}
+
+            </span>
           ))
         }
           </div>
@@ -252,6 +261,7 @@ function Table({
             if (n !== perPage) {
               return (
                 <div
+                  key={Math.random()}
                   aria-hidden="true"
                   onClick={() => { setPerpage(n); setDrop(false); }}
                   id="droplist"

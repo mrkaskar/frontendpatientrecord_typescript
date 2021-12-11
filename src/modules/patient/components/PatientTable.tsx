@@ -27,9 +27,9 @@ function PatientTable():ReactElement {
     images: string[]
   }
   >();
-
+  const fetched = React.useRef<boolean>(false);
   React.useEffect(() => {
-    if (allpatient.data && data.body.length === 1) {
+    if (allpatient.data && data.body.length === 1 && !fetched.current) {
       const patients:string[][] = [];
       allpatient.data.forEach((patient) => {
         patients.push([
@@ -42,6 +42,7 @@ function PatientTable():ReactElement {
         ]);
       });
       setData({ ...data, body: patients });
+      fetched.current = true;
     }
   }, [allpatient.data, data, detailIndex]);
 
