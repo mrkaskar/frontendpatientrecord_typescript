@@ -78,7 +78,7 @@ function Table({
   }, [currentPage, body, perPage]);
 
   return (
-    <div>
+    <div id="thetable">
       <div id="search">
         <div
           id="searchtable"

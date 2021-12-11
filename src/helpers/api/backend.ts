@@ -1,2 +1,2 @@
-const base = 'http://localhost:5000';
+const base = 'https://backendpatientapp.herokuapp.com';
 export const url = `${base}/api`;

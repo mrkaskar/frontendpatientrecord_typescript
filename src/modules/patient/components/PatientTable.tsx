@@ -81,7 +81,8 @@ function PatientTable():ReactElement {
       />
       )
     }
-      {
+      <div style={{ width: '700px' }}>
+        {
       allpatient.isLoading
         ? (
           <div
@@ -106,7 +107,7 @@ function PatientTable():ReactElement {
           />
         )
     }
-
+      </div>
     </div>
   );
 }
