@@ -23,6 +23,7 @@ interface ITable {
   setDetailIndex: React.Dispatch<React.SetStateAction<number>>
 }
 
+let timeout: NodeJS.Timeout;
 function Table({
   data, setDetailModal, setEditModal, setDeleteModal, setDetailIndex,
 }:ITable):JSX.Element {
@@ -38,31 +39,34 @@ function Table({
   const [search, setSearch] = React.useState('');
 
   React.useEffect(() => { setAllcount(body.length); }, [body.length]);
-
   React.useEffect(() => {
-    setCurrentPage(1);
-    if (search) {
-      setDrop(false);
-      setPerpage(10);
-      const found:string[][] = [];
-      body.forEach((bodyData) => {
-        for (let i = 0; i < bodyData.length; i += 1) {
-          if (bodyData[i].toLowerCase().includes(search.toLowerCase())) {
-            found.push(bodyData);
-            break;
-          }
-        }
-      });
-      setPageCount(Math.ceil(found.length / perPage));
-      setAllcount(found.length);
-      const calculatedPagePair = found.slice(perPage * (currentPage - 1), currentPage * perPage);
-      setCurrentItems(calculatedPagePair);
-    } else if (search.length === 0) {
+    clearTimeout(timeout);
+    if (!search) {
       const calculatedPagePair = body.slice(perPage * (currentPage - 1), currentPage * perPage);
       setCurrentItems(calculatedPagePair);
       setPageCount(Math.ceil(body.length / perPage));
       setAllcount(body.length);
+      return;
     }
+    timeout = setTimeout(() => {
+      const found:string[][] = [];
+      body.forEach((bodyData) => {
+        for (let i = 0; i < bodyData.length; i += 1) {
+          if (bodyData[i].toLowerCase().includes(search.toLowerCase())) {
+            if (bodyData[i]) { found.push(bodyData); }
+            break;
+          }
+        }
+      });
+
+      setCurrentPage(1);
+      setDrop(false);
+      setPerpage(10);
+      setPageCount(Math.ceil(found.length / perPage));
+      setAllcount(found.length);
+      const calculatedPagePair = found.slice(perPage * (currentPage - 1), currentPage * perPage);
+      setCurrentItems(calculatedPagePair);
+    }, 200);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 

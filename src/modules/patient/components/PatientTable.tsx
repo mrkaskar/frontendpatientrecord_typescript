@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { useQuery } from 'react-query';
 import { Loader, Table } from '../../../components';
 import DetailModal from './DetailModal';
-import { getAllPatient, IPatient } from '../api/apiFunctions';
+import { getAllPatient } from '../api/apiFunctions';
 
 function PatientTable():ReactElement {
   const [detailModal, setDetailModal] = React.useState(false);
@@ -10,7 +10,6 @@ function PatientTable():ReactElement {
   const [editModal, setEditModal] = React.useState(false);
   // const [deleteModal, setDeleteModal] = React.useState(false);
   const allpatient = useQuery('patients', getAllPatient);
-  const [allp, setAllp] = React.useState<IPatient[]>();
   const [detailIndex, setDetailIndex] = React.useState(-1);
   const [data, setData] = React.useState<{headers:string[], body:string[][]}>({
     headers: ['Registration', 'Name', 'Phone', 'Age', 'Address', 'Actions'],
@@ -30,15 +29,9 @@ function PatientTable():ReactElement {
   >();
 
   React.useEffect(() => {
-    if (allpatient.data) {
-      setAllp(allpatient.data);
-    }
-  }, [allpatient.data]);
-
-  React.useEffect(() => {
-    if (allp && data.body.length === 1) {
+    if (allpatient.data && data.body.length === 1) {
       const patients:string[][] = [];
-      allp.forEach((patient) => {
+      allpatient.data.forEach((patient) => {
         patients.push([
           patient.reg,
           patient.name,
@@ -50,7 +43,7 @@ function PatientTable():ReactElement {
       });
       setData({ ...data, body: patients });
     }
-  }, [allp, data, detailIndex]);
+  }, [allpatient.data, data, detailIndex]);
 
   React.useEffect(() => {
     if (detailIndex >= 0) {
@@ -88,7 +81,7 @@ function PatientTable():ReactElement {
       />
       )
     }
-      <div style={{ width: '700px' }}>
+      <div style={{ width: '900px' }}>
         {
       allpatient.isLoading
         ? (
