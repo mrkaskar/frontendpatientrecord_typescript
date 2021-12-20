@@ -1,29 +1,37 @@
 import React, { ReactElement } from 'react';
-import { useQuery } from 'react-query';
-import { Table } from '../../../components';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { Loader, Table } from '../../../components';
 import DetailModal from './DetailModal';
-import { getAllMed } from '../api/apiFunctions';
+import { deleteMedicine, getAllMed } from '../api/apiFunctions';
+import CreateModal from './CreateModal';
+import DeleteModal from '../../global/DeleteModal';
 
 function MedicationTable():ReactElement {
   const [detailModal, setDetailModal] = React.useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [editModal, setEditModal] = React.useState(false);
-  const [detailIndex, setDetailIndex] = React.useState(0);
-  // const [deleteModal, setDeleteModal] = React.useState(false);
+  const [deleteModal, setDeleteModal] = React.useState(false);
+  const [detailid, setDetailid] = React.useState('initial');
   const allmed = useQuery('medicine', getAllMed);
   const [chosenMed, setChosenMed] = React.useState<{
         medcode: string;
         name: string;
         price: string;
         stock: string;
+        id: string;
  }>();
   const [data, setData] = React.useState<{headers:string[], body:string[][]}>({
     headers: ['Medicine Code', 'Medicine Name', 'Price Per Unit', 'In Stock', 'Actions'],
-    body: [[]],
+    body: [],
+  });
+
+  const deleteMed = useMutation((id: {id: string}) => deleteMedicine(id), {
+    onSuccess: () => {
+      setDeleteModal(false);
+    },
   });
 
   React.useEffect(() => {
-    if (allmed.data && data.body.length === 1) {
+    if (allmed.data) {
       const treatments:string[][] = [];
       allmed.data.forEach((med) => {
         treatments.push([
@@ -32,27 +40,44 @@ function MedicationTable():ReactElement {
           `${med.price} MMK`,
           med.stock,
           'actions',
+          med.id,
         ]);
       });
       setData({ ...data, body: treatments });
     }
-  }, [allmed.data, data, detailIndex]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allmed.data, detailid]);
 
   React.useEffect(() => {
-    if (detailIndex >= 0) {
-      const meds = data.body[detailIndex];
-      setChosenMed(
-        {
-          medcode: meds[0],
-          name: meds[1],
-          price: meds[2],
-          stock: meds[2],
-        },
+    if (detailid.length >= 10 && data.body.length > 0) {
+      const meds = data.body.find((e) => e[5] === detailid);
+      if (meds) {
+        setChosenMed(
+          {
+            medcode: meds[0],
+            name: meds[1],
+            price: meds[2],
+            stock: meds[3],
+            id: meds[5],
+          },
 
-      );
+        );
+      }
     }
-  }, [data.body, detailIndex]);
+  }, [data.body, detailid]);
 
+  const queryClient = useQueryClient();
+  const todelete = ():void => {
+    if (chosenMed) {
+      setTimeout(() => {
+        setData({ ...data, body: data.body.filter((e) => e[5] !== chosenMed.id) });
+      }, 100);
+      setTimeout(() => {
+        queryClient.removeQueries('medicine');
+      }, 100);
+      deleteMed.mutate({ id: chosenMed.id });
+    }
+  };
   return (
     <div>
       {
@@ -63,16 +88,54 @@ function MedicationTable():ReactElement {
       />
       )
     }
+      {
+      editModal && chosenMed && (
+        <CreateModal
+          modal={editModal}
+          setModal={setEditModal}
+          meddata={chosenMed}
+        />
+      )
+      }
 
-      <Table
-        setDetailModal={setDetailModal}
-        setEditModal={setEditModal}
-        setDeleteModal={setDetailModal}
-        setDetailIndex={setDetailIndex}
-        data={
+      {
+        deleteModal && (
+          <DeleteModal
+            setDeleteModal={setDeleteModal}
+            confirm={todelete}
+          />
+        )
+      }
+
+      <div style={{ width: '900px' }}>
+        {
+          allmed.isLoading
+            ? (
+              <div
+                style={{
+                  height: '400px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Loader />
+              </div>
+            )
+            : (
+              <Table
+                setDetailModal={setDetailModal}
+                setEditModal={setEditModal}
+                setDeleteModal={setDeleteModal}
+                setDetailid={setDetailid}
+                data={
           data
       }
-      />
+              />
+            )
+        }
+
+      </div>
 
     </div>
   );

@@ -20,12 +20,12 @@ interface ITable {
   setDetailModal: React.Dispatch<React.SetStateAction<boolean>>
   setEditModal: React.Dispatch<React.SetStateAction<boolean>>
   setDeleteModal: React.Dispatch<React.SetStateAction<boolean>>
-  setDetailIndex: React.Dispatch<React.SetStateAction<number>>
+  setDetailid: React.Dispatch<React.SetStateAction<string>>
 }
 
 let timeout: NodeJS.Timeout;
 function Table({
-  data, setDetailModal, setEditModal, setDeleteModal, setDetailIndex,
+  data, setDetailModal, setEditModal, setDeleteModal, setDetailid,
 }:ITable):JSX.Element {
   const { theme } = React.useContext(ThemeContext);
   const { headers, body } = data;
@@ -71,16 +71,25 @@ function Table({
   }, [search]);
 
   React.useLayoutEffect(() => {
-    if (pageRef.current) { pageRef.current.style.marginLeft = `-${pageRef.current?.clientWidth / 2}px`; }
-    setCurrentPage(1);
-    setPageCount(Math.ceil(body.length / perPage));
+    if (!search) {
+      if (pageRef.current) { pageRef.current.style.marginLeft = `-${pageRef.current?.clientWidth / 2}px`; }
+      setCurrentPage(1);
+      setPageCount(Math.ceil(body.length / perPage));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [body.length, perPage]);
 
   React.useLayoutEffect(() => {
     const calculatedPagePair = body.slice(perPage * (currentPage - 1), currentPage * perPage);
     setCurrentItems(calculatedPagePair);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [body.length]);
+  }, [body]);
+
+  React.useEffect(() => {
+    const calculatedPagePair = body.slice(perPage * (currentPage - 1), currentPage * perPage);
+    setCurrentItems(calculatedPagePair);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]);
 
   return (
     <div id="thetable">
@@ -152,7 +161,7 @@ function Table({
                       colorOne="#9367F1"
                       colorTwo="#BD91F5"
                       onClick={() => {
-                        setDetailIndex(i);
+                        setDetailid(c[c.length - 1]);
                         setDetailModal(true);
                       }}
                     />
@@ -161,14 +170,20 @@ function Table({
                       Icon={Pencil}
                       colorOne="#6785F1"
                       colorTwo="#91C5F5"
-                      onClick={() => setEditModal(true)}
+                      onClick={() => {
+                        setDetailid(c[c.length - 1]);
+                        setEditModal(true);
+                      }}
                     />
                     <div style={{ width: '10px' }} />
                     <Button
                       Icon={Bin}
                       colorOne="#F16767"
                       colorTwo="#F5A991"
-                      onClick={() => setDeleteModal(true)}
+                      onClick={() => {
+                        setDetailid(c[c.length - 1]);
+                        setDeleteModal(true);
+                      }}
                     />
                   </div>
                 );

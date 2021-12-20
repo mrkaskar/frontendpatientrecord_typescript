@@ -10,7 +10,7 @@ function PatientTable():ReactElement {
   const [editModal, setEditModal] = React.useState(false);
   // const [deleteModal, setDeleteModal] = React.useState(false);
   const allpatient = useQuery('patients', getAllPatient);
-  const [detailIndex, setDetailIndex] = React.useState(-1);
+  const [detailid, setDetailid] = React.useState('initial');
   const [data, setData] = React.useState<{headers:string[], body:string[][]}>({
     headers: ['Registration', 'Name', 'Phone', 'Age', 'Address', 'Actions'],
     body: [[]],
@@ -44,32 +44,34 @@ function PatientTable():ReactElement {
       setData({ ...data, body: patients });
       fetched.current = true;
     }
-  }, [allpatient.data, data, detailIndex]);
+  }, [allpatient.data, data, detailid]);
 
   React.useEffect(() => {
-    if (detailIndex >= 0) {
-      const patient = data.body[detailIndex];
-      setChosen(
-        {
-          name: patient[1],
-          phone: patient[2],
-          age: patient[3],
-          address: patient[4],
-          reg: patient[0],
-          takenTreatment: [
-            { tname: 'Metal brace Orthodontic', cost: 10000 },
-            { tname: 'Recementation', cost: 5000 }],
-          medicine: [
-            { mname: 'Amoxicillin', munit: 3, cost: 3000 },
-            { mname: 'Penciclovir', munit: 5, cost: 5000 }],
-          images: ['https://somersetdental.com.au/wp-content/uploads/2016/12/Do-I-Need-A-Tooth-Extraction.jpg',
-            'https://somersetdental.com.au/wp-content/uploads/2016/12/Do-I-Need-A-Tooth-Extraction.jpg',
-          ],
-        },
+    if (detailid.length >= 10 && data.body.length > 0) {
+      const patient = data.body.find((e) => e[4] === detailid);
+      if (patient) {
+        setChosen(
+          {
+            name: patient[1],
+            phone: patient[2],
+            age: patient[3],
+            address: patient[4],
+            reg: patient[0],
+            takenTreatment: [
+              { tname: 'Metal brace Orthodontic', cost: 10000 },
+              { tname: 'Recementation', cost: 5000 }],
+            medicine: [
+              { mname: 'Amoxicillin', munit: 3, cost: 3000 },
+              { mname: 'Penciclovir', munit: 5, cost: 5000 }],
+            images: ['https://somersetdental.com.au/wp-content/uploads/2016/12/Do-I-Need-A-Tooth-Extraction.jpg',
+              'https://somersetdental.com.au/wp-content/uploads/2016/12/Do-I-Need-A-Tooth-Extraction.jpg',
+            ],
+          },
 
-      );
+        );
+      }
     }
-  }, [data.body, detailIndex]);
+  }, [data.body, detailid]);
 
   return (
     <div>
@@ -102,7 +104,7 @@ function PatientTable():ReactElement {
             setDetailModal={setDetailModal}
             setEditModal={setEditModal}
             setDeleteModal={setDetailModal}
-            setDetailIndex={setDetailIndex}
+            setDetailid={setDetailid}
             data={data}
 
           />

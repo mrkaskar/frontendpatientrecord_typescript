@@ -5,6 +5,7 @@
   border-radius: 15px;
   padding-bottom: 50px;
   margin-bottom: 200px;
+  min-width: 500px;
 }
 
 #headback {
@@ -131,6 +132,7 @@
   margin: 0 auto;
   margin-bottom: 20px;
   position: relative;
+  margin-top: 10px;
 }
 #searchinput {
   border: none;

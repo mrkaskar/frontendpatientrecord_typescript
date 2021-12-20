@@ -6,9 +6,13 @@ import { ThemeContext } from '../global/context/ThemeProvider';
 interface ITextBox {
   label: string
   width?: number
+  onInput?: (text: string) => void
+  value?: string
 }
 
-function TextBox({ label, width }: ITextBox):ReactElement {
+function TextBox({
+  label, width, onInput, value,
+}: ITextBox):ReactElement {
   const { theme } = React.useContext(ThemeContext);
 
   return (
@@ -31,12 +35,17 @@ function TextBox({ label, width }: ITextBox):ReactElement {
         }}
         spellCheck={false}
         autoComplete="off"
+        onChange={(e) => onInput && onInput(e.target.value)}
+        value={value}
       />
     </div>
   );
 }
 TextBox.defaultProps = {
   width: 100,
+  // eslint-disable-next-line no-console
+  onInput: () => { console.log('Input'); },
+  value: '',
 };
 
 export default TextBox;
