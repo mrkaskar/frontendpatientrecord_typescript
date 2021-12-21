@@ -83,7 +83,7 @@ function Table({
     const calculatedPagePair = body.slice(perPage * (currentPage - 1), currentPage * perPage);
     setCurrentItems(calculatedPagePair);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [body]);
+  }, [body, perPage]);
 
   React.useEffect(() => {
     const calculatedPagePair = body.slice(perPage * (currentPage - 1), currentPage * perPage);
