@@ -35,7 +35,7 @@ function Navbar():ReactElement {
     >
       <div id="nav-header">
         <span id="title">
-          Biodent Dental Clinic
+          Shwe La Won Dental Clinic
         </span>
         <span id="usericon">
           <User />
