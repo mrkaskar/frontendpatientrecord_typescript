@@ -118,7 +118,7 @@ function CreateModal({ modal, setModal, meddata }:ICreateModal):ReactElement {
                 >
                   <Button
                     onClick={() => {
-                      if (meddata?.medcode) {
+                      if (meddata?.medcode || meddata?.name) {
                         updateMedicine.mutate(form);
                       } else {
                         saveMed.mutate(form);

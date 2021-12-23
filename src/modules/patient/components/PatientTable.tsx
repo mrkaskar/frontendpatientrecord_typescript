@@ -6,9 +6,8 @@ import { getAllPatient } from '../api/apiFunctions';
 
 function PatientTable():ReactElement {
   const [detailModal, setDetailModal] = React.useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [editModal, setEditModal] = React.useState(false);
-  // const [deleteModal, setDeleteModal] = React.useState(false);
+  const [deleteModal, setDeleteModal] = React.useState(false);
   const allpatient = useQuery('patients', getAllPatient);
   const [detailid, setDetailid] = React.useState('initial');
   const [data, setData] = React.useState<{headers:string[], body:string[][]}>({
@@ -17,11 +16,12 @@ function PatientTable():ReactElement {
   });
   const [chosen, setChosen] = React.useState<
   {
+    reg: string
     name: string
     phone: string
     age: string
     address: string
-    reg: string
+    date: string
     takenTreatment: {tname: string, cost: number}[]
     medicine: {mname: string, munit: number, cost: number}[]
     images: string[]
@@ -39,38 +39,36 @@ function PatientTable():ReactElement {
           patient.age,
           patient.address,
           'actions',
+          patient.id,
         ]);
       });
       setData({ ...data, body: patients });
       fetched.current = true;
     }
-  }, [allpatient.data, data, detailid]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allpatient.data, detailid]);
 
   React.useEffect(() => {
-    if (detailid.length >= 10 && data.body.length > 0) {
-      const patient = data.body.find((e) => e[4] === detailid);
+    if (detailid.length >= 10 && data.body.length > 0 && allpatient.data) {
+      const patient = allpatient.data.find((e) => e.id === detailid);
       if (patient) {
-        setChosen(
-          {
-            name: patient[1],
-            phone: patient[2],
-            age: patient[3],
-            address: patient[4],
-            reg: patient[0],
-            takenTreatment: [
-              { tname: 'Metal brace Orthodontic', cost: 10000 },
-              { tname: 'Recementation', cost: 5000 }],
-            medicine: [
-              { mname: 'Amoxicillin', munit: 3, cost: 3000 },
-              { mname: 'Penciclovir', munit: 5, cost: 5000 }],
-            images: ['https://somersetdental.com.au/wp-content/uploads/2016/12/Do-I-Need-A-Tooth-Extraction.jpg',
-              'https://somersetdental.com.au/wp-content/uploads/2016/12/Do-I-Need-A-Tooth-Extraction.jpg',
-            ],
-          },
+        const chosenP = {
+          reg: patient.reg,
+          name: patient.name,
+          phone: patient.phone,
+          age: patient.age,
+          address: patient.address,
+          date: patient.date,
+          takenTreatment: patient.treatment.map((ee) => ({ tname: ee.name, cost: +ee.charge })),
+          // eslint-disable-next-line max-len
+          medicine: patient.medicine.map((ee, index) => ({ mname: ee.name, munit: patient.medCount[index], cost: +ee.price })),
+          images: patient.images,
+        };
 
-        );
+        setChosen(chosenP);
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.body, detailid]);
 
   return (

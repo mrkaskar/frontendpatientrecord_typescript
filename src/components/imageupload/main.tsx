@@ -8,9 +8,12 @@ import colors from '../global/themes/colors';
 import { ThemeContext } from '../global/context/ThemeProvider';
 import Gallery from '../gallery';
 
-function Image():ReactElement {
+interface IImage {
+  images: ImageListType
+  setImages: React.Dispatch<React.SetStateAction<ImageListType>>
+}
+function Image({ images, setImages }:IImage):ReactElement {
   const { theme } = React.useContext(ThemeContext);
-  const [images, setImages] = React.useState<ImageListType>([]);
   const [gallery, setGallery] = React.useState(false);
   const [currentGallery, setCurrentGallery] = React.useState(0);
 
@@ -20,6 +23,7 @@ function Image():ReactElement {
   ):void => {
     // data for submit
     setImages(imageList);
+    alert(JSON.stringify(imageList));
   };
   return (
     <div>

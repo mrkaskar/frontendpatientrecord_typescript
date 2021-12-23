@@ -56,7 +56,7 @@ function Table({
       const found:string[][] = [];
       body.forEach((bodyData) => {
         for (let i = 0; i < bodyData.length; i += 1) {
-          if (bodyData[i].toLowerCase().includes(search.toLowerCase())) {
+          if (typeof bodyData[i] === 'string' && bodyData[i].toLowerCase().includes(search.toLowerCase())) {
             found.push(bodyData);
             break;
           }
@@ -140,7 +140,7 @@ function Table({
                 if (body[i] && body[i][index] !== 'actions') {
                   return (
                     <div
-                      key={`${Math.random() + Date.now() + Math.random()}`}
+                      key={`${Math.random()}`}
                       className="body"
                       style={{
                         color: colors.text[theme],
@@ -153,7 +153,7 @@ function Table({
 
                 return (
                   <div
-                    key={`${Math.random() + Date.now()}`}
+                    key={`${Math.random()}`}
                     className="actions body"
                   >
                     <Button

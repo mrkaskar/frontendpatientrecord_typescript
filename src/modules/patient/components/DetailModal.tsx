@@ -4,16 +4,18 @@ import { ReactComponent as Userphoto } from '../../../assets/userphoto.svg';
 import colors from '../../../components/global/themes/colors';
 import { ThemeContext } from '../../../components/global/context/ThemeProvider';
 import Gallery from '../../../components/gallery';
+import { url } from '../../../helpers/api/backend';
 
 interface IDetailModal {
   setDetailModal: React.Dispatch<React.SetStateAction<boolean>>
   userdata : {
+    reg: string
     name: string
     phone: string
     age: string
     address: string
-    reg: string
-    takenTreatment: {tname: string, cost: number}[]
+    date: string
+    takenTreatment: {tname: string, cost: number, munit?:number}[]
     medicine: {mname: string, munit: number, cost: number}[]
     images: string[]
   }
@@ -22,23 +24,30 @@ interface IDetailModal {
 function DetailModal({ setDetailModal, userdata }: IDetailModal):ReactElement {
   const { theme } = React.useContext(ThemeContext);
   const {
-    name, phone, age, address, reg, takenTreatment, medicine, images,
+    name, phone, age, address, date, reg, takenTreatment, medicine, images,
   } = userdata;
 
   const [gallery, setGallery] = React.useState(false);
   const [currentGallery, setCurrentGallery] = React.useState(0);
 
+  const [fimages, setFimages] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    setFimages(images.map((e) => `${url}/patients/images/${e}`));
+  },
+  [images]);
+
   return (
     <div>
       {
-        gallery && images.length > 0
+        gallery && fimages.length > 0
         && (
         <Gallery
-          img={images[currentGallery]}
+          img={fimages[currentGallery]}
           setGallery={setGallery}
           currentGallery={currentGallery}
           setCurrentGallery={setCurrentGallery}
-          imgCount={images.length}
+          imgCount={fimages.length}
         />
         )
       }
@@ -136,6 +145,22 @@ function DetailModal({ setDetailModal, userdata }: IDetailModal):ReactElement {
               >
                 {reg}
               </div>
+              <div
+                style={{
+                  color: colors.lightText[theme],
+                }}
+                className="detail-label"
+              >
+                Date
+              </div>
+              <div
+                className="detail-info"
+                style={{
+                  color: colors.text[theme],
+                }}
+              >
+                {new Date(date).toLocaleString().split(',')[0]}
+              </div>
             </div>
             <div id="user-info-2">
               <div
@@ -191,7 +216,7 @@ function DetailModal({ setDetailModal, userdata }: IDetailModal):ReactElement {
                     units
                   </span>
                   <span className="mcost">
-                    {e.cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    {(e.cost * +e.munit).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                     {' '}
                     MMK
                   </span>
@@ -217,7 +242,7 @@ function DetailModal({ setDetailModal, userdata }: IDetailModal):ReactElement {
                 >
                   {
                   [...takenTreatment, ...medicine]
-                    .reduce((p, n) => p + n.cost, 0)
+                    .reduce((p, n) => p + (n.munit ? n.munit * n.cost : n.cost), 0)
                     .toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
                 }
                   {' '}
@@ -248,7 +273,7 @@ function DetailModal({ setDetailModal, userdata }: IDetailModal):ReactElement {
               }}
             >
               {
-                  images.map((img, index) => (
+                  fimages.map((img, index) => (
                     <div
                       style={{
                         width: '450px',

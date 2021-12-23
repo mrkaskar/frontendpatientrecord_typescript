@@ -3,10 +3,11 @@
 import React, {
   forwardRef, LegacyRef, ReactElement,
 } from 'react';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import DatePicker from 'react-datepicker';
+import { ImageListType } from 'react-images-uploading';
 import {
-  Button, Dropdown, Modal, TextBox,
+  Button, Dropdown, Loader, Modal, TextBox,
 } from '../../../components';
 import { ReactComponent as Userphoto } from '../../../assets/userphoto.svg';
 import { ReactComponent as Save } from '../../../assets/save.svg';
@@ -16,12 +17,15 @@ import { ThemeContext } from '../../../components/global/context/ThemeProvider';
 import { getAllTreatment } from '../../treatment/api/apiFunctions';
 import { getAllMed } from '../../medication/api/apiFunctions';
 import 'react-datepicker/dist/react-datepicker.css';
+import { createPatient, IPatient } from '../api/apiFunctions';
+import useForm from '../../../hooks/useForm';
 
 interface ICreateModal {
   modal: boolean
   setModal: React.Dispatch<React.SetStateAction<boolean>>
+  patientdata?: IPatient
 }
-function CreateModal({ modal, setModal }:ICreateModal):ReactElement {
+function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement {
   const { theme } = React.useContext(ThemeContext);
   const alltreatment = useQuery('treatment', getAllTreatment);
   const [startDate, setStartDate] = React.useState<Date | [Date | null, Date | null] | null>(new Date());
@@ -42,6 +46,38 @@ function CreateModal({ modal, setModal }:ICreateModal):ReactElement {
 
   const fetchedTreatment = React.useRef(false);
   const fetchedMed = React.useRef(false);
+
+  const [patient, setPatient] = React.useState({
+    name: '',
+    phone: '',
+    age: '',
+    address: '',
+    regNum: '',
+  });
+  const [images, setImages] = React.useState<ImageListType>([]);
+
+  const [form, updateForm] = useForm(patient);
+  const formData = new FormData();
+
+  const queryClient = useQueryClient();
+  const savePatient = useMutation((data:FormData) => createPatient(data), {
+    onSuccess: () => {
+      queryClient.invalidateQueries('patients');
+      setModal(false);
+    },
+  });
+  const uploadAndSave = ():void => {
+    formData.append('name', form.name);
+    formData.append('phone', form.phone);
+    formData.append('age', form.age);
+    formData.append('address', form.address);
+    formData.append('regNum', form.regNum);
+    formData.append('trements', JSON.stringify(chosenTreatment.map((e) => e.id)));
+    formData.append('medicine', JSON.stringify(chosenMed.map((e) => ({ id: e.id, count: e.count }))));
+    formData.append('images', JSON.stringify(images));
+
+    savePatient.mutate(formData);
+  };
 
   React.useEffect(() => {
     const totalTreatmentCost = chosenTreatment.reduce((prev, cur) => prev + Number(cur.tcharge), 0);
@@ -149,76 +185,106 @@ function CreateModal({ modal, setModal }:ICreateModal):ReactElement {
         header="Create a patient"
         closeModal={() => { setModal(false); }}
       >
-        <div id="create-patient-body">
-          <div id="patient-cost">
-            <div id="user-info">
-              <Userphoto />
-              <div id="total-cost">
-                Total Cost
-              </div>
-              <div id="cost">
-                {totalCost}
-                {' '}
-                MMK
-              </div>
-            </div>
-          </div>
-          <div id="patient-form">
-            <div id="patient-name" className="text-form">
-              <TextBox
-                label="Name"
-                width={212}
-              />
-            </div>
+        {
+        savePatient.isLoading ? (
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop: '100px',
+          }}
+          >
+            <Loader />
+            <p
+              style={{ color: colors.text[theme] }}
+            >
+              Saving Patient data...
 
-            <div id="patient-phone" className="text-form">
-              <TextBox
-                label="Phone Number"
-                width={212}
-              />
-            </div>
-            <div id="patient-age" className="text-form">
-              <TextBox
-                label="Age"
-              />
-            </div>
-            <div style={{ width: '100%' }}>
-              <div id="patient-address" className="text-form">
-                <TextBox
-                  label="Address"
-                  width={541}
-                />
-              </div>
-            </div>
-            <div style={{ width: '100%', display: 'flex' }}>
-              <div id="patient-reg" className="text-form">
-                <TextBox
-                  label="Registration Number"
-                  width={212}
-                />
-              </div>
-              <div
-                className="label"
-                style={{ marginLeft: '10px' }}
-              >
-                Date
-                {' '}
-                <br />
-                <DatePicker
-                  // @ts-ignore
-                  selected={startDate}
-                  onChange={(date) => setStartDate(date)}
-                  // @ts-ignore
-                  customInput={<DateInput />}
-                />
-              </div>
-            </div>
-            <div id="treatment-area" style={{ width: '100%' }}>
-              <div id="treatment-type">
-                <div className="label">
-                  Treatment Type
+            </p>
+          </div>
+        )
+          : (
+            <div id="create-patient-body">
+              <div id="patient-cost">
+                <div id="user-info">
+                  <Userphoto />
+                  <div id="total-cost">
+                    Total Cost
+                  </div>
+                  <div id="cost">
+                    {totalCost}
+                    {' '}
+                    MMK
+                  </div>
                 </div>
-                {
+              </div>
+              <div id="patient-form">
+                <div id="patient-name" className="text-form">
+                  <TextBox
+                    label="Name"
+                    width={212}
+                    onInput={(text: string) => { updateForm('name', text); }}
+                    value={form.name}
+                  />
+                </div>
+
+                <div id="patient-phone" className="text-form">
+                  <TextBox
+                    label="Phone Number"
+                    width={212}
+                    onInput={(text: string) => { updateForm('phone', text); }}
+                    value={form.phone}
+                  />
+                </div>
+                <div id="patient-age" className="text-form">
+                  <TextBox
+                    label="Age"
+                    onInput={(text: string) => { updateForm('age', text); }}
+                    value={form.age}
+                  />
+                </div>
+                <div style={{ width: '100%' }}>
+                  <div id="patient-address" className="text-form">
+                    <TextBox
+                      label="Address"
+                      width={541}
+                      onInput={(text: string) => { updateForm('address', text); }}
+                      value={form.address}
+                    />
+                  </div>
+                </div>
+                <div style={{ width: '100%', display: 'flex' }}>
+                  <div id="patient-reg" className="text-form">
+                    <TextBox
+                      label="Registration Number"
+                      width={212}
+                      onInput={(text: string) => { updateForm('regNum', text); }}
+                      value={form.regNum}
+                    />
+                  </div>
+                  <div
+                    className="label"
+                    style={{ marginLeft: '10px' }}
+                  >
+                    Date
+                    {' '}
+                    <br />
+                    <DatePicker
+                  // @ts-ignore
+                      selected={startDate}
+                      onChange={(date) => setStartDate(date)}
+                  // @ts-ignore
+                      customInput={<DateInput />}
+                    />
+                  </div>
+                </div>
+                <div id="treatment-area" style={{ width: '100%' }}>
+                  <div id="treatment-type">
+                    <div className="label">
+                      Treatment Type
+                    </div>
+                    {
                   treatmentlist
                 && (
                 <Dropdown
@@ -229,13 +295,13 @@ function CreateModal({ modal, setModal }:ICreateModal):ReactElement {
                 />
                 )
                 }
-              </div>
-              <div className="chosen-treatment">
-                <div className="label" style={{ textDecoration: 'underline' }}>
-                  Chosen Treatment and Cost
-                </div>
-                <div className="treatments">
-                  {
+                  </div>
+                  <div className="chosen-treatment">
+                    <div className="label" style={{ textDecoration: 'underline' }}>
+                      Chosen Treatment and Cost
+                    </div>
+                    <div className="treatments">
+                      {
                   chosenTreatment.length > 0
                   && (
                     chosenTreatment.map((c) => (
@@ -280,16 +346,16 @@ function CreateModal({ modal, setModal }:ICreateModal):ReactElement {
                     ))
                   )
                 }
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            {/*  */}
-            <div id="med-area" style={{ width: '100%' }}>
-              <div id="med-type">
-                <div className="label">
-                  Medication
-                </div>
-                {medlist
+                {/*  */}
+                <div id="med-area" style={{ width: '100%' }}>
+                  <div id="med-type">
+                    <div className="label">
+                      Medication
+                    </div>
+                    {medlist
                 && (
                 <Dropdown
                   label="Choose Medication"
@@ -298,13 +364,13 @@ function CreateModal({ modal, setModal }:ICreateModal):ReactElement {
                   setAction={setMed}
                 />
                 )}
-              </div>
-              <div className="chosen-med">
-                <div className="label" style={{ textDecoration: 'underline' }}>
-                  Chosen Medication and Cost
-                </div>
-                <div className="meds">
-                  {
+                  </div>
+                  <div className="chosen-med">
+                    <div className="label" style={{ textDecoration: 'underline' }}>
+                      Chosen Medication and Cost
+                    </div>
+                    <div className="meds">
+                      {
                     chosenMed.map((e) => (
                       <div
                         className="amed"
@@ -367,36 +433,44 @@ function CreateModal({ modal, setModal }:ICreateModal):ReactElement {
                     ))
                   }
 
+                    </div>
+                  </div>
+                </div>
+                <div id="img-area" style={{ width: '100%' }}>
+                  <div className="label">
+                    Patient Images
+                  </div>
+                  <div>
+                    <Imageupload
+                      images={images}
+                      setImages={setImages}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      height: '20px',
+                    }}
+                  />
+                  <Button
+                    onClick={uploadAndSave}
+                    Icon={Save}
+                    color1="#53BB85"
+                    color2="#61F2A7"
+                    label="Save"
+                  />
                 </div>
               </div>
             </div>
-            <div id="img-area" style={{ width: '100%' }}>
-              <div className="label">
-                Patient Images
-              </div>
-              <div>
-                <Imageupload />
-              </div>
-              <div
-                style={{
-                  height: '20px',
-                }}
-              />
-              <Button
-                onClick={() => 3}
-                Icon={Save}
-                color1="#53BB85"
-                color2="#61F2A7"
-                label="Save"
-              />
-            </div>
-          </div>
-        </div>
+          )
+              }
       </Modal>
       )
     }
     </div>
   );
 }
+CreateModal.defaultProps = {
+  patientdata: {},
+};
 
 export default CreateModal;
