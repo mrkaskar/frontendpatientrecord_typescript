@@ -5,7 +5,6 @@ import React, {
 } from 'react';
 import { useQuery } from 'react-query';
 import DatePicker from 'react-datepicker';
-import { ImageListType } from 'react-images-uploading';
 import {
   Button, Dropdown, Modal, TextBox,
 } from '../../../components';
@@ -21,23 +20,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 interface ICreateModal {
   modal: boolean
   setModal: React.Dispatch<React.SetStateAction<boolean>>
-  patientdata?: {
-    id: string
-    folderId: string
-    reg: string
-    name: string
-    phone: string
-    age: string
-    address: string
-    total: number
-    date: string
-    takenTreatment: {id: string, tname: string, cost: number}[]
-    medicine: {id: string, mname: string, munit: number, cost: number, stock: string}[]
-    medCount: number[]
-    images: string[]
-  }
 }
-function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement {
+function CreateModal({ modal, setModal }:ICreateModal):ReactElement {
   const { theme } = React.useContext(ThemeContext);
   const alltreatment = useQuery('treatment', getAllTreatment);
   const [startDate, setStartDate] = React.useState<Date | [Date | null, Date | null] | null>(new Date());
@@ -55,8 +39,6 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
   }[]>([]);
 
   const [totalCost, setTotalCost] = React.useState(0);
-
-  const [images, setImages] = React.useState<ImageListType>([]);
 
   const fetchedTreatment = React.useRef(false);
   const fetchedMed = React.useRef(false);
@@ -393,10 +375,7 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                 Patient Images
               </div>
               <div>
-                <Imageupload
-                  images={images}
-                  setImages={setImages}
-                />
+                <Imageupload />
               </div>
               <div
                 style={{
@@ -419,11 +398,5 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
     </div>
   );
 }
-
-CreateModal.defaultProps = {
-  patientdata: {
-
-  },
-};
 
 export default CreateModal;

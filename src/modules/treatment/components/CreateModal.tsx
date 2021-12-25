@@ -18,6 +18,8 @@ function CreateModal({ modal, setModal, treatmentdata }:ICreateModal):ReactEleme
     trecode: '', name: '', charge: '', id: '',
   });
   const [form, updateForm] = useForm<ITreatment>(treat);
+  const [valid, setValid] = React.useState(false);
+
   const queryClient = useQueryClient();
 
   const saveTreat = useMutation((data:ITreatment) => createTreatment(data), {
@@ -44,6 +46,12 @@ function CreateModal({ modal, setModal, treatmentdata }:ICreateModal):ReactEleme
       });
     }
   }, [treatmentdata]);
+
+  React.useEffect(() => {
+    if (form.trecode && form.name && form.charge) {
+      setValid(true);
+    }
+  }, [form]);
   return (
     <div>
       {
@@ -107,13 +115,15 @@ function CreateModal({ modal, setModal, treatmentdata }:ICreateModal):ReactEleme
             >
               <Button
                 onClick={() => {
-                  if (
-                    treatmentdata?.trecode
-                  ) { updateTreat.mutate(form); } else { saveTreat.mutate(form); }
+                  if (valid) {
+                    if (
+                      treatmentdata?.trecode
+                    ) { updateTreat.mutate(form); } else { saveTreat.mutate(form); }
+                  }
                 }}
                 Icon={Save}
-                color1="#53BB85"
-                color2="#61F2A7"
+                color1={valid ? '#53BB85' : '#757575'}
+                color2={valid ? '#53BB85' : '#969696'}
                 label="Save"
               />
             </div>

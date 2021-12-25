@@ -1,8 +1,10 @@
 import React, { ReactElement } from 'react';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { Loader, Table } from '../../../components';
 import DetailModal from './DetailModal';
-import { getAllPatient } from '../api/apiFunctions';
+import { deletePatient, getAllPatient } from '../api/apiFunctions';
+import CreateModal from './CreateModal';
+import DeleteModal from '../../global/DeleteModal';
 
 function PatientTable():ReactElement {
   const [detailModal, setDetailModal] = React.useState(false);
@@ -16,20 +18,23 @@ function PatientTable():ReactElement {
   });
   const [chosen, setChosen] = React.useState<
   {
+    id: string
+    folderId: string
     reg: string
     name: string
     phone: string
     age: string
     address: string
+    total: number
     date: string
-    takenTreatment: {tname: string, cost: number}[]
-    medicine: {mname: string, munit: number, cost: number}[]
+    takenTreatment: {id: string, tname: string, cost: number}[]
+    medicine: {id: string, mname: string, munit: number, cost: number, stock: string}[]
+    medCount: number[]
     images: string[]
   }
   >();
-  const fetched = React.useRef<boolean>(false);
   React.useEffect(() => {
-    if (allpatient.data && data.body.length === 1 && !fetched.current) {
+    if (allpatient.data) {
       const patients:string[][] = [];
       allpatient.data.forEach((patient) => {
         patients.push([
@@ -43,7 +48,6 @@ function PatientTable():ReactElement {
         ]);
       });
       setData({ ...data, body: patients });
-      fetched.current = true;
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allpatient.data, detailid]);
@@ -52,25 +56,56 @@ function PatientTable():ReactElement {
     if (detailid.length >= 10 && data.body.length > 0 && allpatient.data) {
       const patient = allpatient.data.find((e) => e.id === detailid);
       if (patient) {
+        const { treatment } = patient;
         const chosenP = {
+          id: patient.id,
+          folderId: patient.folderId,
           reg: patient.reg,
           name: patient.name,
           phone: patient.phone,
           age: patient.age,
           address: patient.address,
+          total: patient.total,
           date: patient.date,
-          takenTreatment: patient.treatment.map((ee) => ({ tname: ee.name, cost: +ee.charge })),
+          // eslint-disable-next-line no-underscore-dangle
+          takenTreatment: treatment.map((ee) => ({ id: ee._id, tname: ee.name, cost: +ee.charge })),
           // eslint-disable-next-line max-len
-          medicine: patient.medicine.map((ee, index) => ({ mname: ee.name, munit: patient.medCount[index], cost: +ee.price })),
+          medicine: patient.medicine.map((ee, index) => ({
+          // eslint-disable-next-line no-underscore-dangle
+            id: ee._id,
+            mname: ee.name,
+            munit: patient.medCount[index],
+            cost: +ee.price,
+            stock: ee.stock,
+          })),
+          medCount: patient.medCount,
           images: patient.images,
         };
-
         setChosen(chosenP);
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.body, detailid]);
 
+  const queryClient = useQueryClient();
+
+  // eslint-disable-next-line max-len
+  const deleteP = useMutation((dataid:{id: string, folderId: string}) => deletePatient(dataid), {
+    onSuccess: () => {
+      setDeleteModal(false);
+    },
+  });
+  const todelete = ():void => {
+    if (chosen) {
+      setTimeout(() => {
+        setData({ ...data, body: data.body.filter((e) => e[6] !== chosen.id) });
+      }, 100);
+      setTimeout(() => {
+        queryClient.removeQueries('patients');
+      }, 100);
+      deleteP.mutate({ id: chosen.id, folderId: chosen.folderId });
+    }
+  };
   return (
     <div>
 
@@ -82,6 +117,23 @@ function PatientTable():ReactElement {
       />
       )
     }
+      {
+      editModal && chosen && (
+        <CreateModal
+          modal={editModal}
+          setModal={setEditModal}
+          patientdata={chosen}
+        />
+      )
+    }
+      {
+        deleteModal && (
+          <DeleteModal
+            setDeleteModal={setDeleteModal}
+            confirm={todelete}
+          />
+        )
+      }
       <div style={{ width: '900px' }}>
         {
       allpatient.isLoading
@@ -101,7 +153,7 @@ function PatientTable():ReactElement {
           <Table
             setDetailModal={setDetailModal}
             setEditModal={setEditModal}
-            setDeleteModal={setDetailModal}
+            setDeleteModal={setDeleteModal}
             setDetailid={setDetailid}
             data={data}
 

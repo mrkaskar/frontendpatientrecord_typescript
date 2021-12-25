@@ -23,7 +23,6 @@ function Image({ images, setImages }:IImage):ReactElement {
   ):void => {
     // data for submit
     setImages(imageList);
-    alert(JSON.stringify(imageList));
   };
   return (
     <div>

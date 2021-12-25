@@ -4,6 +4,7 @@ import { ReactComponent as Userphoto } from '../../../assets/userphoto.svg';
 import colors from '../../../components/global/themes/colors';
 import { ThemeContext } from '../../../components/global/context/ThemeProvider';
 import Gallery from '../../../components/gallery';
+import Drive from '../../../assets/drive.png';
 import { url } from '../../../helpers/api/backend';
 
 interface IDetailModal {
@@ -14,6 +15,7 @@ interface IDetailModal {
     phone: string
     age: string
     address: string
+    total: number
     date: string
     takenTreatment: {tname: string, cost: number, munit?:number}[]
     medicine: {mname: string, munit: number, cost: number}[]
@@ -24,7 +26,7 @@ interface IDetailModal {
 function DetailModal({ setDetailModal, userdata }: IDetailModal):ReactElement {
   const { theme } = React.useContext(ThemeContext);
   const {
-    name, phone, age, address, date, reg, takenTreatment, medicine, images,
+    name, phone, age, address, date, reg, takenTreatment, medicine, images, total,
   } = userdata;
 
   const [gallery, setGallery] = React.useState(false);
@@ -32,8 +34,22 @@ function DetailModal({ setDetailModal, userdata }: IDetailModal):ReactElement {
 
   const [fimages, setFimages] = React.useState<string[]>([]);
 
-  React.useEffect(() => {
-    setFimages(images.map((e) => `${url}/patients/images/${e}`));
+  React.useLayoutEffect(() => {
+    const timer = setTimeout(() => {
+      if (images) {
+        setFimages(images.map((e) => `${url}/patients/images/${e}`));
+      }
+    }, 1000);
+
+    return () => {
+      clearTimeout(timer);
+      setFimages([]);
+      const imgs = document.getElementsByClassName('allimages');
+      for (let i = 0; i < imgs.length; i += 1) {
+        const im = imgs[i] as HTMLImageElement;
+        im.src = '';
+      }
+    };
   },
   [images]);
 
@@ -213,7 +229,7 @@ function DetailModal({ setDetailModal, userdata }: IDetailModal):ReactElement {
                   <span className="munit">
                     {e.munit}
                     {' '}
-                    units
+                    {+e.munit > 1 ? 'units' : 'unit'}
                   </span>
                   <span className="mcost">
                     {(e.cost * +e.munit).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -241,9 +257,8 @@ function DetailModal({ setDetailModal, userdata }: IDetailModal):ReactElement {
                   }}
                 >
                   {
-                  [...takenTreatment, ...medicine]
-                    .reduce((p, n) => p + (n.munit ? n.munit * n.cost : n.cost), 0)
-                    .toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                    total
+                      .toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
                 }
                   {' '}
                   MMK
@@ -252,7 +267,9 @@ function DetailModal({ setDetailModal, userdata }: IDetailModal):ReactElement {
               </div>
             </div>
           </div>
-
+          {
+            images.length > 0
+          && (
           <div
             id="patient-detail-images"
           >
@@ -273,28 +290,53 @@ function DetailModal({ setDetailModal, userdata }: IDetailModal):ReactElement {
               }}
             >
               {
-                  fimages.map((img, index) => (
+                  fimages.length > 0 ? fimages.map((img, index) => (
                     <div
                       style={{
                         width: '450px',
+                        paddingRight: '20px',
                       }}
                       aria-hidden="true"
                       onClick={() => {
                         setCurrentGallery(index);
                         setGallery((prev) => !prev);
                       }}
+                      key={img}
                     >
                       <img
                         style={{ width: '100%', objectFit: 'contain' }}
                         alt="patient teeth"
                         src={img}
+                        key={Math.random()}
+                        loading="lazy"
+                        className="allimages"
                       />
                     </div>
-                  ))
-                }
+                  )) : (
+                    <div style={{
+                      width: '100%',
+                      textAlign: 'center',
+                      marginTop: '50px',
+                    }}
+                    >
+                      Loading images from Drive
+                      <br />
+                      <br />
+                      <img
+                        style={{
+                          width: '50px',
+                        }}
+                        src={Drive}
+                        alt="Google Drive"
+                      />
+                    </div>
+                  )
+}
             </div>
           </div>
+          )
 
+            }
         </div>
       </Modal>
     </div>

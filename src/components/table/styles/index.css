@@ -39,6 +39,10 @@
   width: 320px;
 }
 
+.Actions {
+  margin-right: 10px;
+}
+
 .header {
   color: white;
   font-weight: bold;

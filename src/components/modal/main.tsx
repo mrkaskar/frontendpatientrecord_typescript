@@ -19,7 +19,7 @@ function Modal({
     <div
       aria-hidden="true"
       id="backdrop"
-      onClick={closeModal}
+      // onClick={closeModal}
     >
       <div
         aria-hidden="true"

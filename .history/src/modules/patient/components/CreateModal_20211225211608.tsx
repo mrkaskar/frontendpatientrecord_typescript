@@ -21,23 +21,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 interface ICreateModal {
   modal: boolean
   setModal: React.Dispatch<React.SetStateAction<boolean>>
-  patientdata?: {
-    id: string
-    folderId: string
-    reg: string
-    name: string
-    phone: string
-    age: string
-    address: string
-    total: number
-    date: string
-    takenTreatment: {id: string, tname: string, cost: number}[]
-    medicine: {id: string, mname: string, munit: number, cost: number, stock: string}[]
-    medCount: number[]
-    images: string[]
-  }
 }
-function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement {
+function CreateModal({ modal, setModal }:ICreateModal):ReactElement {
   const { theme } = React.useContext(ThemeContext);
   const alltreatment = useQuery('treatment', getAllTreatment);
   const [startDate, setStartDate] = React.useState<Date | [Date | null, Date | null] | null>(new Date());
@@ -393,10 +378,7 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                 Patient Images
               </div>
               <div>
-                <Imageupload
-                  images={images}
-                  setImages={setImages}
-                />
+                <Imageupload />
               </div>
               <div
                 style={{
@@ -419,11 +401,5 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
     </div>
   );
 }
-
-CreateModal.defaultProps = {
-  patientdata: {
-
-  },
-};
 
 export default CreateModal;

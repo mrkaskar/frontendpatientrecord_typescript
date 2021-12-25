@@ -18,6 +18,8 @@ function CreateModal({ modal, setModal, meddata }:ICreateModal):ReactElement {
     id: '', medcode: '', name: '', price: '', stock: '',
   });
   const [form, updateForm] = useForm<IMed>(med);
+  const [valid, setValid] = React.useState(false);
+
   const queryClient = useQueryClient();
 
   const saveMed = useMutation((data:IMed) => createMed(data), {
@@ -44,6 +46,13 @@ function CreateModal({ modal, setModal, meddata }:ICreateModal):ReactElement {
       });
     }
   }, [meddata]);
+
+  React.useEffect(() => {
+    if (form.medcode && form.name && form.price && form.stock) {
+      if (+form.stock > 0
+      && +form.price > 0) { setValid(true); }
+    }
+  }, [form]);
   return (
     <div>
       {
@@ -118,15 +127,17 @@ function CreateModal({ modal, setModal, meddata }:ICreateModal):ReactElement {
                 >
                   <Button
                     onClick={() => {
-                      if (meddata?.medcode || meddata?.name) {
-                        updateMedicine.mutate(form);
-                      } else {
-                        saveMed.mutate(form);
+                      if (valid) {
+                        if (meddata?.medcode || meddata?.name) {
+                          updateMedicine.mutate(form);
+                        } else {
+                          saveMed.mutate(form);
+                        }
                       }
                     }}
                     Icon={Save}
-                    color1="#53BB85"
-                    color2="#61F2A7"
+                    color1={valid ? '#53BB85' : '#757575'}
+                    color2={valid ? '#53BB85' : '#969696'}
                     label="Save"
                   />
                 </div>

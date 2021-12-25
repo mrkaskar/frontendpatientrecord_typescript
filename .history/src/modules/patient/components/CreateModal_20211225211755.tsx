@@ -37,7 +37,7 @@ interface ICreateModal {
     images: string[]
   }
 }
-function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement {
+function CreateModal({ modal, setModal }:ICreateModal):ReactElement {
   const { theme } = React.useContext(ThemeContext);
   const alltreatment = useQuery('treatment', getAllTreatment);
   const [startDate, setStartDate] = React.useState<Date | [Date | null, Date | null] | null>(new Date());
@@ -419,11 +419,5 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
     </div>
   );
 }
-
-CreateModal.defaultProps = {
-  patientdata: {
-
-  },
-};
 
 export default CreateModal;

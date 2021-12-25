@@ -420,10 +420,4 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
   );
 }
 
-CreateModal.defaultProps = {
-  patientdata: {
-
-  },
-};
-
 export default CreateModal;
