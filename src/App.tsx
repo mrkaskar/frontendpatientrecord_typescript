@@ -28,6 +28,7 @@ function App():JSX.Element {
     async function checkAuth():Promise<void> {
       const path = window.location.href.split('/');
       try {
+        axios.defaults.withCredentials = true;
         const result = await axios.get(`${baseURL}/checkauth`, {
           withCredentials: true,
         });

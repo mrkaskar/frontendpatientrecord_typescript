@@ -153,14 +153,6 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
     }
   };
 
-  const setMedCount = (count: number, id: string):void => {
-    setChosenMed(chosenMed.map((e) => {
-      if (e.id === id) {
-        e.count = count;
-      }
-      return e;
-    }));
-  };
   const DateInput:React.ReactNode = forwardRef(({ value, onClick }:{value: Date, onClick: ()=>void}, ref:LegacyRef<HTMLButtonElement> | undefined) => (
     <button
       type="button"
@@ -284,6 +276,7 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                 justifyContent: 'center',
                 alignItems: 'center',
                 marginTop: '100px',
+                marginBottom: '150px',
               }}
               >
                 <Loader />
@@ -461,7 +454,6 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                         {
                     chosenMed.map((e) => (
                       <div
-                        key={Math.random()}
                         className="amed"
                         style={{
                           position: 'relative',
@@ -492,7 +484,13 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                             value={e.count}
                             className="med-unit-count"
                             onChange={(evt) => {
-                              setMedCount(+evt.target.value, e.id);
+                              setChosenMed(chosenMed.map((ee) => {
+                                if (ee.id === e.id) {
+                                  // eslint-disable-next-line no-param-reassign
+                                  ee.count = +evt.target.value;
+                                }
+                                return ee;
+                              }));
                             }}
                             style={{
                               backgroundColor: colors.inputback[theme],
