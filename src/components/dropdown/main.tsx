@@ -16,11 +16,12 @@ type TDropdown = {
   label: string;
   width?: number;
   list: Check[];
-  setAction: (id:string, action: boolean) => void;
+  dateKey: string;
+  setAction: (id:string, action: boolean, date: string) => void;
   }
 
 function Dropdown({
-  label, width, list, setAction,
+  label, width, list, setAction, dateKey,
 }: TDropdown): JSX.Element {
   const [state, setState] = React.useState(false);
   const { theme } = React.useContext(ThemeContext);
@@ -126,10 +127,10 @@ function Dropdown({
             }
             return (
               <div
-                key={Date.now() + (Math.random() * 10)}
+                key={ele.id}
                 onClick={(e) => {
                   preventClose(e);
-                  if (available) { setAction(ele.id, !ele.checked); }
+                  if (available) { setAction(ele.id, !ele.checked, dateKey); }
                 }}
                 aria-hidden="true"
                 className="listarea"

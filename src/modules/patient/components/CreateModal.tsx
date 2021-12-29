@@ -56,101 +56,227 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
   const [startDate, setStartDate] = React.useState<Date | [Date | null, Date | null] | null>(new Date());
   const allmed = useQuery('medicine', getAllMed);
   const [treatmentlist, setTreatmentlist] = React.useState<
-  {id: string; label: string; checked: boolean, charge: string} []
-  >();
+  {
+  [key:string]:
+  {id: string; label: string; checked: boolean, charge: string} []}
+  >({});
+
+  const [localDate, setLocalDate] = React.useState(
+    () => (startDate instanceof Date ? startDate.toLocaleDateString() : ''),
+  );
   // eslint-disable-next-line max-len
-  const [chosenTreatment, setChosenTreatment] = React.useState<{id: string;tname: string; tcharge: string}[]>([]);
+  const [chosenTreatment, setChosenTreatment] = React.useState<{
+  [key: string]:
+  {id: string;tname: string; tcharge: string}[]}>({ });
   const [medlist, setMedlist] = React.useState<{
-    id: string; label: string; checked: boolean, price: string; count:number; stock: number;
-  }[]>();
+    [key:string]:{id: string; label: string; checked: boolean, price: string; count:number; stock: number;
+    }[]}
+  >({});
   const [chosenMed, setChosenMed] = React.useState<{
-    id: string; mname: string; price: string; count: number; stock: string, max: number
-  }[]>([]);
+    [key: string]:
+    {id: string; mname: string; price: string; count: number; stock: string, max: number
+  }[]}>({ });
 
   const [totalCost, setTotalCost] = React.useState(0);
+  const [localStock, setLocalStock] = React.useState<
+    {id: string; stock: number}[]
+  >([]);
 
   const [images, setImages] = React.useState<ImageListType>([]);
 
   const fetchedTreatment = React.useRef(false);
   const fetchedMed = React.useRef(false);
 
-  React.useEffect(() => {
-    if (!Object.values(form).includes('') && chosenTreatment.length > 0) {
-      setValid(true);
-    }
-  }, [chosenTreatment.length, form]);
+  // React.useEffect(() => {
+  //   if (!Object.values(form).includes('') && chosenTreatment.length > 0) {
+  //     setValid(true);
+  //   }
+  // }, [chosenTreatment.length, form]);
 
+  // React.useEffect(() => {
+  //   const totalTreatmentCost = chosenTreatment.reduce((prev, cur) => prev + Number(cur.tcharge), 0);
+  //   const totalMedCost = chosenMed.reduce((prev, cur) => prev + (Number(cur.price) * Number(cur.count)), 0);
+  //   setTotalCost(totalTreatmentCost + totalMedCost);
+  // }, [chosenMed, chosenTreatment]);
   React.useEffect(() => {
-    const totalTreatmentCost = chosenTreatment.reduce((prev, cur) => prev + Number(cur.tcharge), 0);
-    const totalMedCost = chosenMed.reduce((prev, cur) => prev + (Number(cur.price) * Number(cur.count)), 0);
-    setTotalCost(totalTreatmentCost + totalMedCost);
-  }, [chosenMed, chosenTreatment]);
+    if (startDate instanceof Date) {
+      setLocalDate(startDate.toLocaleDateString());
+      const dateString = startDate.toLocaleDateString();
+      if (alltreatment.data) {
+        setTreatmentlist({
+          [dateString]: alltreatment.data.map((t) => ({
+            id: t.id,
+            label: t.name,
+            checked: (function checkTreatment() {
+              if (chosenTreatment[dateString]) {
+                let checked = false;
+                chosenTreatment[dateString].forEach((e) => {
+                  if (e.id === t.id) checked = true;
+                });
+                return checked;
+              }
+              return false;
+            }()),
+            charge: t.charge,
+          })),
+        });
+      }
+      if (allmed.data) {
+        setMedlist({
+          [dateString]: allmed.data.map((t) => ({
+            id: t.id,
+            label: t.name,
+            checked:
+            (function checkMed() {
+              if (chosenMed[dateString]) {
+                let checked = false;
+                chosenMed[dateString].forEach((e) => {
+                  if (e.id === t.id) checked = true;
+                });
+                return checked;
+              }
+              return false;
+            }()),
+            price: t.price,
+            count: 0,
+            stock: (function checkStock() {
+              const find = localStock.find((e) => e.id === t.id);
+              if (find) return find.stock;
+              return 0;
+            }()),
+            max: +t.stock,
+          })),
+        });
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startDate]);
 
   React.useEffect(() => {
     if (alltreatment.data && !fetchedTreatment.current) {
       fetchedTreatment.current = true;
-      setTreatmentlist(alltreatment.data.map((t) => ({
-        id: t.id, label: t.name, checked: false, charge: t.charge,
-      })));
+      setTreatmentlist({
+        [localDate]: alltreatment.data.map((t) => ({
+          id: t.id, label: t.name, checked: false, charge: t.charge,
+        })),
+      });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [alltreatment.data]);
 
   React.useEffect(() => {
     if (allmed.data && !fetchedMed.current) {
       fetchedMed.current = true;
-      setMedlist(allmed.data.map((t) => ({
-        id: t.id, label: t.name, checked: false, price: t.price, count: 0, stock: +t.stock, max: +t.stock,
-      })));
+      setMedlist({
+        [localDate]: allmed.data.map((t) => ({
+          id: t.id, label: t.name, checked: false, price: t.price, count: 0, stock: +t.stock, max: +t.stock,
+        })),
+      });
+      setLocalStock(allmed.data.map((m) => ({ id: m.id, stock: +m.stock })));
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allmed.data]);
 
-  const setTreat = (id: string, action: boolean):void => {
-    setTreatmentlist(treatmentlist?.map((l) => {
-      // eslint-disable-next-line no-param-reassign
-      if (l.id === id) l.checked = action;
+  const setTreat = (id: string, action: boolean, date: string):void => {
+    setTreatmentlist({
+      [localDate]:
+      treatmentlist[localDate]?.map((l) => {
+        // eslint-disable-next-line no-param-reassign
+        if (l.id === id) l.checked = action;
 
-      return l;
-    }));
+        return l;
+      }),
+    });
+
     const toTakeAction = alltreatment.data?.find((e) => e.id === id);
     if (action && toTakeAction) {
       // add treatment
-      setChosenTreatment([...chosenTreatment,
-        {
-          id: toTakeAction.id,
-          tname: toTakeAction.name,
-          tcharge: toTakeAction.charge,
-        },
-      ]);
+      setChosenTreatment((prev) => {
+        const existing = prev[localDate];
+        if (existing) {
+          return {
+            ...prev,
+            [localDate]: [...existing, {
+              id: toTakeAction.id,
+              tname: toTakeAction.name,
+              tcharge: toTakeAction.charge,
+            }],
+          };
+        }
+        return {
+          ...prev,
+          [localDate]: [{
+            id: toTakeAction.id,
+            tname: toTakeAction.name,
+            tcharge: toTakeAction.charge,
+          }],
+        };
+      });
     } else if (!action && toTakeAction) {
-      // remove treatment
-      setChosenTreatment(chosenTreatment.filter((e) => e.id !== toTakeAction.id));
+      setChosenTreatment(
+        (prev) => ({ ...prev, [date]: prev[date].filter((e) => e.id !== toTakeAction.id) }),
+      );
     }
   };
 
-  const setMed = (id: string, action: boolean):void => {
-    setMedlist(medlist?.map((l) => {
-      // eslint-disable-next-line no-param-reassign
-      if (l.id === id) l.checked = action;
+  const setMed = (id: string, action: boolean, date: string):void => {
+    setMedlist({
+      [localDate]:
+      medlist[localDate]?.map((l) => {
+        // eslint-disable-next-line no-param-reassign
+        if (l.id === id) l.checked = action;
 
-      return l;
-    }));
+        return l;
+      }),
+    });
+
     const toTakeAction = allmed.data?.find((e) => e.id === id);
     if (action && toTakeAction) {
+      setLocalStock((prev) => prev.map((e) => {
+        if (e.id === toTakeAction.id) {
+          e.stock -= 1;
+        }
+        return e;
+      }));
       // add treatment
-      setChosenMed([...chosenMed,
-        {
-          id: toTakeAction.id,
-          mname: toTakeAction.name,
-          count: 1,
-          price: toTakeAction.price,
-          stock: toTakeAction.stock,
-          max: +toTakeAction.stock,
-        },
-      ]);
+      setChosenMed((prev) => {
+        const existing = prev[localDate];
+        if (existing) {
+          return {
+            ...prev,
+            [localDate]: [...existing, {
+              id: toTakeAction.id,
+              mname: toTakeAction.name,
+              count: 1,
+              price: toTakeAction.price,
+              stock: toTakeAction.stock,
+              max: +toTakeAction.stock,
+            }],
+          };
+        }
+        return {
+          ...prev,
+          [localDate]: [{
+            id: toTakeAction.id,
+            mname: toTakeAction.name,
+            count: 1,
+            price: toTakeAction.price,
+            stock: toTakeAction.stock,
+            max: +toTakeAction.stock,
+          }],
+        };
+      });
     } else if (!action && toTakeAction) {
-      // remove treatment
-      setChosenMed(chosenMed.filter((e) => e.id !== toTakeAction.id));
+      setChosenMed(
+        (prev) => ({ ...prev, [date]: prev[date].filter((e) => e.id !== toTakeAction.id) }),
+      );
     }
+  };
+
+  const calculateMax = (id: string, count: number):number => {
+    const findLs = localStock.find((e) => e.id === id);
+    if (findLs) return findLs.stock + count;
+    return 10;
   };
 
   const DateInput:React.ReactNode = forwardRef(({ value, onClick }:{value: Date, onClick: ()=>void}, ref:LegacyRef<HTMLButtonElement> | undefined) => (
@@ -194,8 +320,8 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
     toUpload.age = form.age;
     toUpload.address = form.address;
     toUpload.regNum = form.reg;
-    toUpload.treatments = JSON.stringify(chosenTreatment.map((e) => e.id));
-    toUpload.medicine = JSON.stringify(chosenMed.map((e) => ({ id: e.id, count: e.count })));
+    // toUpload.treatments = JSON.stringify(chosenTreatment.map((e) => e.id));
+    // toUpload.medicine = JSON.stringify(chosenMed.map((e) => ({ id: e.id, count: e.count })));
     toUpload.total = totalCost;
     toUpload.date = startDate;
     toUpload.images = JSON.stringify(images);
@@ -222,37 +348,41 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
       });
       setStartDate(new Date(patientdata.date));
       const chosenTreatmentIds:string[] = [];
-      setChosenTreatment(patientdata.takenTreatment.map((e) => {
-        chosenTreatmentIds.push(e.id);
-        return {
-          id: e.id,
-          tname: e.tname,
-          tcharge: e.cost.toString(),
-        };
-      }));
 
-      if (alltreatment.data) {
-        setTreatmentlist(alltreatment.data.map((t) => ({
-          id: t.id, label: t.name, checked: chosenTreatmentIds.includes(t.id), charge: t.charge,
-        })));
-      }
+      // patientdata.takenTreatment.map((e) => {
+      //   chosenTreatmentIds.push(e.id);
+      //   const toAdd = {
+      //     id: e.id,
+      //     tname: e.tname,
+      //     tcharge: e.cost.toString(),
+      //   };
+      //   return toAdd;
+      // }
+      setChosenTreatment({ ...chosenTreatment, [localDate]: [] });
+
+      // if (alltreatment.data) {
+      //   setTreatmentlist(alltreatment.data.map((t) => ({
+      //     id: t.id, label: t.name, checked: chosenTreatmentIds.includes(t.id), charge: t.charge,
+      //   })));
+      // }
       const medIds: string[] = [];
-      setChosenMed(patientdata.medicine.map((e) => {
-        medIds.push(e.id);
-        return {
-          id: e.id,
-          mname: e.mname,
-          price: e.cost.toString(),
-          count: e.munit,
-          stock: e.stock,
-          max: +e.stock + +e.munit,
-        };
-      }));
-      if (allmed.data) {
-        setMedlist(allmed.data.map((t) => ({
-          id: t.id, label: t.name, checked: medIds.includes(t.id), price: t.price, count: 0, stock: +t.stock, max: +t.stock,
-        })));
-      }
+      // setChosenMed(patientdata.medicine.map((e) => {
+      //   medIds.push(e.id);
+      //   return {
+      //     id: e.id,
+      //     mname: e.mname,
+      //     price: e.cost.toString(),
+      //     count: e.munit,
+      //     stock: e.stock,
+      //     max: +e.stock + +e.munit,
+      //   };
+      // }));
+      setChosenMed({ ...chosenMed, localDate: [] });
+      // if (allmed.data) {
+      //   setMedlist(allmed.data.map((t) => ({
+      //     id: t.id, label: t.name, checked: medIds.includes(t.id), price: t.price, count: 0, stock: +t.stock, max: +t.stock,
+      //   })));
+      // }
       setImages(patientdata.images.map((e) => ({ dataURL: `${url}/patients/images/${e}` })));
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -369,8 +499,9 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                 && (
                 <Dropdown
                   label="Choose Treatment"
-                  list={treatmentlist}
+                  list={treatmentlist[localDate]}
                   width={400}
+                  dateKey={localDate}
                   setAction={setTreat}
                 />
                 )
@@ -382,48 +513,75 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                       </div>
                       <div className="treatments">
                         {
-                  chosenTreatment.length > 0
+                  Object.keys(chosenTreatment).length > 0
                   && (
-                    chosenTreatment.map((c) => (
-                      <div
-                        key={Math.random()}
-                        className="atreatment"
-                        style={{
-                          position: 'relative',
-                          paddingRight: '20px',
-                        }}
-                      >
-                        <span
-                          className="treatment-name"
-                          style={{
-                            display: 'inline-block',
-                            minWidth: '150px',
-                          }}
-                        >
-                          {c.tname}
+                    Object.keys(chosenTreatment).map((c) => (
 
-                        </span>
-                        <span className="treatment-cost">
-                          {c.tcharge}
-                          {' '}
-                          MMK
-                        </span>
-                        <span
-                          aria-hidden="true"
-                          onClick={() => {
-                            setTreat(c.id, false);
-                          }}
-                          style={{
-                            position: 'absolute',
-                            right: '0',
-                            top: '-1px',
-                          }}
-                        >
-                          x
+                      <div key={c}>
+                        {
+                          chosenTreatment[c].length > 0
+                          && (
+                          <span
+                            style={{
+                              display: 'inline-block',
+                              backgroundColor: 'rgb(0,161,123)',
+                              backgroundImage: 'linear-gradient(32deg, rgba(0,161,123,1) 44%, rgba(2,195,150,1) 100%)',
+                              padding: '1px 2px 1px 2px',
+                              fontSize: '11px',
+                              borderRadius: '3px',
+                              color: 'white',
+                              marginTop: '10px',
+                            }}
+                          >
+                            {c}
 
-                        </span>
+                          </span>
+                          )
+                        }
+
+                        {
+                          chosenTreatment[c].map((cc) => (
+                            <div
+                              key={cc.tname}
+                              className="atreatment"
+                              style={{
+                                position: 'relative',
+                                paddingRight: '20px',
+                              }}
+                            >
+                              <span
+                                className="treatment-name"
+                                style={{
+                                  display: 'inline-block',
+                                  minWidth: '150px',
+                                }}
+                              >
+                                {cc.tname}
+
+                              </span>
+                              <span className="treatment-cost">
+                                {cc.tcharge}
+                                {' '}
+                                MMK
+                              </span>
+                              <span
+                                aria-hidden="true"
+                                onClick={() => {
+                                  setTreat(cc.id, false, c);
+                                }}
+                                style={{
+                                  position: 'absolute',
+                                  right: '0',
+                                  top: '-1px',
+                                }}
+                              >
+                                x
+
+                              </span>
+                            </div>
+                          ))
+                        }
                       </div>
-
                     ))
                   )
                 }
@@ -440,8 +598,9 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                 && (
                 <Dropdown
                   label="Choose Medication"
-                  list={medlist}
+                  list={medlist[localDate]}
                   width={400}
+                  dateKey={localDate}
                   setAction={setMed}
                 />
                 )}
@@ -452,7 +611,34 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                       </div>
                       <div className="meds">
                         {
-                    chosenMed.map((e) => (
+                  Object.keys(chosenMed).length > 0
+                    && Object.keys(chosenMed).map((e) => (
+                      <div key={e}>
+                        {
+                        chosenMed[e].length > 0
+                        && (
+                          (
+                            <span
+                              style={{
+                                display: 'inline-block',
+                                backgroundColor: 'rgb(0,161,123)',
+                                backgroundImage: 'linear-gradient(32deg, rgba(0,161,123,1) 44%, rgba(2,195,150,1) 100%)',
+                                padding: '1px 2px 1px 2px',
+                                fontSize: '11px',
+                                borderRadius: '3px',
+                                color: 'white',
+                                marginTop: '10px',
+                              }}
+                            >
+                              {e}
+
+                            </span>
+                          )
+                        )
+                       }
+                        {
+
+                    chosenMed[e].map((m) => (
                       <div
                         className="amed"
                         style={{
@@ -468,7 +654,7 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                             textOverflow: 'ellipsis',
                           }}
                         >
-                          {e.mname}
+                          {m.mname}
 
                         </span>
                         <span
@@ -480,17 +666,49 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                           <input
                             type="number"
                             min={1}
-                            max={e.max}
-                            value={e.count}
+                            max={calculateMax(m.id, m.count)}
+                            value={m.count === 0 ? 1 : m.count}
                             className="med-unit-count"
+                            onKeyDown={(evt) => {
+                              if (evt.key === 'Backspace') {
+                                // eslint-disable-next-line no-param-reassign
+
+                                setMed(m.id, false, e);
+                              }
+                            }}
                             onChange={(evt) => {
-                              setChosenMed(chosenMed.map((ee) => {
-                                if (ee.id === e.id) {
+                              if (m.count < +evt.target.value) {
+                                setLocalStock((prev) => prev.map((eee) => {
                                   // eslint-disable-next-line no-param-reassign
-                                  ee.count = +evt.target.value;
-                                }
-                                return ee;
-                              }));
+                                  if (eee.id === m.id) eee.stock -= 1;
+                                  return eee;
+                                }));
+                              } else {
+                                setLocalStock((prev) => prev.map((eee) => {
+                                  // eslint-disable-next-line no-param-reassign
+                                  if (eee.id === m.id) eee.stock += 1;
+                                  return eee;
+                                }));
+                                setMedlist({
+                                  [localDate]:
+                                  medlist[localDate]?.map((l) => {
+                                    // eslint-disable-next-line no-param-reassign
+                                    if (l.id === m.id) l.stock = localStock.find((eee) => eee.id === m.id)?.stock ?? 1;
+
+                                    return l;
+                                  }),
+                                });
+                              }
+                              setChosenMed({
+                                ...chosenMed,
+                                [e]: chosenMed[e].map((ee) => {
+                                  if (ee.id === m.id) {
+                                    // eslint-disable-next-line no-param-reassign
+                                    ee.count = +evt.target.value;
+                                  }
+                                  return ee;
+                                }),
+                              });
                             }}
                             style={{
                               backgroundColor: colors.inputback[theme],
@@ -499,14 +717,14 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                           />
                         </span>
                         <span className="med-cost">
-                          {+e.price * e.count}
+                          {+m.price * m.count}
                           {' '}
                           MMK
                         </span>
                         <span
                           aria-hidden="true"
                           onClick={() => {
-                            setMed(e.id, false);
+                            setMed(m.id, false, e);
                           }}
                           style={{
                             position: 'absolute',
@@ -517,6 +735,9 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                           x
 
                         </span>
+                      </div>
+                    ))
+                      }
                       </div>
                     ))
                   }
