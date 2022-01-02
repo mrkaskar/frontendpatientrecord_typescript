@@ -2,6 +2,7 @@ import React, { ReactElement } from 'react';
 import './styles/index.css';
 import colors from '../global/themes/colors';
 import { ThemeContext } from '../global/context/ThemeProvider';
+import { ReactComponent as Cross } from './assets/cross.svg';
 
 interface IModal {
   header: string
@@ -38,7 +39,7 @@ function Modal({
             onClick={closeModal}
             id="close_modal"
           >
-            X
+            <Cross />
 
           </span>
         </div>

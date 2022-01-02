@@ -9,3 +9,4 @@ export { default as Navbar } from './navbar';
 export { default as Dashcard } from './dashcard';
 export { default as Button } from './button';
 export { default as Loader } from './loading';
+export { default as InputNumber } from './inputnumber';

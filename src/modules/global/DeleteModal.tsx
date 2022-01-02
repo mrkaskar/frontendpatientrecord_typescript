@@ -10,14 +10,15 @@ function DeleteModal({ setDeleteModal, confirm }: IDeleteModal):ReactElement {
   return (
     <div>
       <Modal
-        width={600}
+        width={500}
         header="Delete Confirmation"
         closeModal={() => setDeleteModal(false)}
       >
         <div
           id="delete-body"
           style={{
-            paddingLeft: '100px',
+            paddingLeft: '30px',
+            marginTop: '-10px',
           }}
         >
           <h3

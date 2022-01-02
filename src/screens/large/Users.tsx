@@ -5,9 +5,11 @@ import UsersTable from '../../modules/users/components/UsersTable';
 import { ReactComponent as Add } from '../../assets/add.svg';
 import CreateModal from '../../modules/users/components/CreateModal';
 import './Users.css';
+import { UserContext } from '../../components/global/context/UserProvider';
 
 function Users():ReactElement {
   const { theme } = React.useContext(ThemeContext);
+  const { user } = React.useContext(UserContext);
   const [modal, setModal] = React.useState(false);
   return (
     <div>
@@ -20,6 +22,8 @@ function Users():ReactElement {
         }}
       >
         Users Board
+        {user.type === 'admin'
+        && (
         <span
           aria-hidden="true"
           onClick={() => setModal(true)}
@@ -50,6 +54,8 @@ function Users():ReactElement {
             Create
           </span>
         </span>
+        )}
+
       </span>
 
       <div id="treatment-board-body">

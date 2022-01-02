@@ -120,7 +120,7 @@ function Dropdown({
           </div>
         </div>
         {
-          showlist.map((ele) => {
+          (showlist && showlist.length > 0) && showlist.map((ele) => {
             let available = true;
             if (ele.stock !== undefined) {
               if (ele.stock === 0) available = false;
@@ -130,7 +130,6 @@ function Dropdown({
                 key={ele.id}
                 onClick={(e) => {
                   preventClose(e);
-                  if (available) { setAction(ele.id, !ele.checked, dateKey); }
                 }}
                 aria-hidden="true"
                 className="listarea"
@@ -140,6 +139,7 @@ function Dropdown({
                   label={`${ele.label}`}
                   checked={ele.checked}
                   avail={available}
+                  toExe={() => { setAction(ele.id, !ele.checked, dateKey); }}
                 />
               </div>
             );

@@ -8,14 +8,17 @@ import { ThemeContext } from '../global/context/ThemeProvider';
 type TCheckbox = {
   checked?: boolean;
   label: string;
-  avail?: boolean
+  avail?: boolean;
+  toExe: () => void;
 }
-function Checkbox({ checked, label, avail }:TCheckbox): JSX.Element {
+function Checkbox({
+  checked, label, avail, toExe,
+}:TCheckbox): JSX.Element {
   const [check, setCheck] = React.useState(checked);
   const { theme } = React.useContext(ThemeContext);
   const { text } = colors;
   function toggleCheck():void {
-    if (avail) { setCheck((prev) => !prev); }
+    if (avail) { setCheck((prev) => !prev); toExe(); }
   }
   return (
     <div id="checkbox">

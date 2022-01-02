@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Modal } from '../../../components';
+import { UserContext } from '../../../components/global/context/UserProvider';
 
 interface IDetailModal {
   setDetailModal: React.Dispatch<React.SetStateAction<boolean>>
@@ -12,6 +13,7 @@ interface IDetailModal {
 }
 
 function DetailModal({ setDetailModal, med }: IDetailModal):ReactElement {
+  const { user } = React.useContext(UserContext);
   const {
     medcode, name, price, stock,
   } = med;
@@ -45,13 +47,20 @@ function DetailModal({ setDetailModal, med }: IDetailModal):ReactElement {
               Medicine Name
             </h4>
             <p>{name}</p>
-            <h4 style={{
-              textDecoration: 'underline',
-            }}
-            >
-              Medicine Price
-            </h4>
-            <p>{price}</p>
+            {
+              user.type === 'admin'
+              && (
+              <>
+                <h4 style={{
+                  textDecoration: 'underline',
+                }}
+                >
+                  Medicine Price
+                </h4>
+                <p>{price}</p>
+              </>
+              )
+            }
 
             <h4 style={{
               textDecoration: 'underline',

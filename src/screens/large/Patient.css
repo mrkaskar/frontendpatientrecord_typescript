@@ -110,7 +110,6 @@
 
 #detail-patient-body {
   display: flex;
-  margin-top: 20px;
 }
 
 #user-photo {
@@ -120,21 +119,24 @@
 
 #user-info-1 {
   width: 30%;
+  padding-right: 5px;
+  height: 300px;
 }
 
 #user-info-2 {
   width: 50%;
+  padding-left: 5px;
+  border-left: 0.5px solid #5c5c5c15;
 }
 
 .detail-label {
   font-weight: bold;
-  font-size: 14px;
+  font-size: 13px;
   margin-bottom: 5px;
-  text-decoration: underline;
 }
 
 .detail-info {
-  font-size: 13px;
+  font-size: 12px;
   margin-bottom: 10px;
   display: flex;
 }
@@ -158,4 +160,20 @@
 .mcost {
   width: 20%;
   font-weight: bold;
+}
+#remark {
+  width: 700px;
+  height: 80px;
+  outline: none;
+  border: none;
+  border-radius: 5px;
+  resize: none;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New';
+  letter-spacing: 0px;
+  padding-left: 7px;
+  padding-top: 4px;
+}
+#remark:focus {
+  outline: none;
+  box-shadow: 0 0 1px 1px #34ff55;
 }

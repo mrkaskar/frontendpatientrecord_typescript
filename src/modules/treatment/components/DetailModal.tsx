@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Modal } from '../../../components';
+import { UserContext } from '../../../components/global/context/UserProvider';
 
 interface IDetailModal {
   setDetailModal: React.Dispatch<React.SetStateAction<boolean>>
@@ -11,6 +12,7 @@ interface IDetailModal {
 }
 
 function DetailModal({ setDetailModal, treatmentdata }: IDetailModal):ReactElement {
+  const { user } = React.useContext(UserContext);
   const {
     trecode, name, charge,
   } = treatmentdata;
@@ -45,14 +47,20 @@ function DetailModal({ setDetailModal, treatmentdata }: IDetailModal):ReactEleme
 
             </h4>
             <p>{name}</p>
-            <h4 style={{
-              textDecoration: 'underline',
-            }}
-            >
-              Charge Amount
-
-            </h4>
-            <p>{charge}</p>
+            {
+              user.type === 'admin'
+              && (
+              <>
+                <h4 style={{
+                  textDecoration: 'underline',
+                }}
+                >
+                  Charge Amount
+                </h4>
+                <p>{charge}</p>
+              </>
+              )
+            }
           </div>
 
         </div>

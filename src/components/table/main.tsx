@@ -132,23 +132,31 @@ function Table({
         <div id="headback" />
         {
         headers.map((head, index) => (
-          <div key={head} className={`columns ${head.replace(/\s/g, '')} ${index === 0 && 'head'}`}>
-            <div className="header">
-              {head}
-            </div>
-            <div className="bodies">
-              {
+          <>
+            {
+            (user.type === 'casher' && (head === 'Charge Amount' || head === 'Price Per Unit')) ? null
+
+              : (
+                <div key={head} className={`columns ${head.replace(/\s/g, '')} ${index === 0 && 'head'}`}>
+                  <div
+                    className="header"
+                  >
+                    {head}
+                  </div>
+                  <div className="bodies">
+                    {
               currentItems.length > 0 ? currentItems.map((c, i) => {
-                if (body[i] && body[i][index] !== 'actions') {
+                if (body[i] && body[i][index] !== 'actions' && body[i]) {
                   return (
                     <div
                       key={`${Math.random()}`}
                       className="body"
                       style={{
                         color: colors.text[theme],
+
                       }}
                     >
-                      {c[index]}
+                      {c[index] === '0' ? null : c[index]}
                     </div>
                   );
                 }
@@ -172,7 +180,7 @@ function Table({
                       Icon={Pencil}
                       colorOne="#6785F1"
                       colorTwo="#91C5F5"
-                      disabled={headers[0] === 'Email' && user.type === 'casher'}
+                      disabled={headers[0] !== 'Last Treatment Date' && user.type === 'casher'}
                       onClick={() => {
                         if (!(headers[0] === 'Email' && user.type === 'casher')) {
                           setDetailid(c[c.length - 1]);
@@ -207,9 +215,12 @@ function Table({
               )
             }
 
-            </div>
+                  </div>
 
-          </div>
+                </div>
+              )
+}
+          </>
         ))
       }
         <div id="pageP" ref={pageRef}>

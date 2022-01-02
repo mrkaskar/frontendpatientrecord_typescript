@@ -12,8 +12,12 @@ export interface IPatient {
   total: number;
   date: string;
   treatment: {_id: string, name: string, charge: string}[];
+  treCount: number [];
+  treatmentDates: string[];
   medicine: {_id: string, name: string, price: string, stock: string}[];
+  medDates: string[];
   medCount: number[];
+  remark: string;
   images: string[];
 }
 
@@ -33,6 +37,7 @@ export interface IUploadPatient {
   total: number;
   treatments: string;
   medicine: string;
+  remark: string;
   images: string;
   id?:string;
 }

@@ -9,10 +9,12 @@ import { ReactComponent as Money } from '../../assets/money.svg';
 import { ReactComponent as Treatment } from '../../assets/treatment.svg';
 import { ReactComponent as Patient } from '../../assets/patient.svg';
 import { getDashBoard } from '../../modules/dashboard/api/apiFunctions';
+import { UserContext } from '../../components/global/context/UserProvider';
 
 function Dashboard():ReactElement {
   const { theme } = React.useContext(ThemeContext);
   const dashboard = useQuery('dashboard', getDashBoard);
+  const { user } = React.useContext(UserContext);
   const [dash, setDash] = React.useState({
     users: 0,
     patients: 0,
@@ -36,7 +38,9 @@ function Dashboard():ReactElement {
           color: colors.text[theme],
         }}
       >
-        Welcome Dr.John
+        Welcome
+        {' '}
+        {user.name}
       </span>
       <div
         className="dashboard-content"
@@ -47,7 +51,6 @@ function Dashboard():ReactElement {
           rowGap: '30px',
         }}
       >
-
         <Dashcard
           Icon={Users}
           color1="#CFDFFF"
@@ -69,6 +72,8 @@ function Dashboard():ReactElement {
           label="Total Medicine"
           count={medicine}
         />
+        {user.type === 'admin'
+        && (
         <Dashcard
           Icon={Money}
           color1="#BBFFBE"
@@ -76,6 +81,7 @@ function Dashboard():ReactElement {
           label="Revenue"
           count={revenue}
         />
+        )}
         <Dashcard
           Icon={Treatment}
           color1="#F8FFA7"

@@ -7,7 +7,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import DatePicker from 'react-datepicker';
 import { ImageListType } from 'react-images-uploading';
 import {
-  Button, Dropdown, Loader, Modal, TextBox,
+  Button, Dropdown, InputNumber, Loader, Modal, TextBox,
 } from '../../../components';
 import { ReactComponent as Userphoto } from '../../../assets/userphoto.svg';
 import { ReactComponent as Save } from '../../../assets/save.svg';
@@ -20,6 +20,7 @@ import './datepicker.css';
 import useForm from '../../../hooks/useForm';
 import { createPatient, IUploadPatient, updatePatient } from '../api/apiFunctions';
 import { url } from '../../../helpers/api/backend';
+import { UserContext } from '../../../components/global/context/UserProvider';
 
 interface ICreateModal {
   modal: boolean
@@ -34,20 +35,25 @@ interface ICreateModal {
     address: string
     total: number
     date: string
-    takenTreatment: {id: string, tname: string, cost: number}[]
-    medicine: {id: string, mname: string, munit: number, cost: number, stock: string}[]
-    medCount: number[]
+    pTreatment: {[key: string]:{id: string; tname: string; tcharge: string, unit: number}[]}
+    // eslint-disable-next-line max-len
+    pMed: {[key: string]:{id: string; mname: string; price: string; count: number ; stock: string; max: number}[]}
+    tDates: string[]
+    mDates: string[]
+    remark: string
     images: string[]
   }
 }
 function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement {
   const { theme } = React.useContext(ThemeContext);
+  const { user } = React.useContext(UserContext);
   const patient = {
     reg: '',
     name: '',
     phone: '',
     age: '',
     address: '',
+    remark: '',
   };
   const [form, updateForm, setForm] = useForm(patient);
   const [valid, setValid] = React.useState(false);
@@ -67,7 +73,7 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
   // eslint-disable-next-line max-len
   const [chosenTreatment, setChosenTreatment] = React.useState<{
   [key: string]:
-  {id: string;tname: string; tcharge: string}[]}>({ });
+  {id: string;tname: string; tcharge: string, unit: number}[]}>({ });
   const [medlist, setMedlist] = React.useState<{
     [key:string]:{id: string; label: string; checked: boolean, price: string; count:number; stock: number;
     }[]}
@@ -87,17 +93,24 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
   const fetchedTreatment = React.useRef(false);
   const fetchedMed = React.useRef(false);
 
-  // React.useEffect(() => {
-  //   if (!Object.values(form).includes('') && chosenTreatment.length > 0) {
-  //     setValid(true);
-  //   }
-  // }, [chosenTreatment.length, form]);
+  React.useEffect(() => {
+    if (form.name.length > 0) {
+      setValid(true);
+    }
+  }, [chosenTreatment, chosenTreatment.length, form]);
 
-  // React.useEffect(() => {
-  //   const totalTreatmentCost = chosenTreatment.reduce((prev, cur) => prev + Number(cur.tcharge), 0);
-  //   const totalMedCost = chosenMed.reduce((prev, cur) => prev + (Number(cur.price) * Number(cur.count)), 0);
-  //   setTotalCost(totalTreatmentCost + totalMedCost);
-  // }, [chosenMed, chosenTreatment]);
+  function flatten<T>(obj:T):T[] {
+    let arr:T[] = [];
+    Object.values(obj).forEach((o) => { arr = [...arr, ...o]; });
+    return arr;
+  }
+
+  React.useEffect(() => {
+    const totalTreatmentCost = flatten(chosenTreatment).reduce((prev, cur) => prev + Number(+cur.tcharge * +cur.unit), 0);
+    const totalMedCost = flatten(chosenMed).reduce((prev, cur) => prev + (Number(cur.price) * Number(cur.count)), 0);
+    setTotalCost(totalTreatmentCost + totalMedCost);
+  }, [chosenMed, chosenTreatment]);
+
   React.useEffect(() => {
     if (startDate instanceof Date) {
       setLocalDate(startDate.toLocaleDateString());
@@ -179,11 +192,11 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
 
   const setTreat = (id: string, action: boolean, date: string):void => {
     setTreatmentlist({
-      [localDate]:
-      treatmentlist[localDate]?.map((l) => {
+      ...treatmentlist,
+      [date]:
+      treatmentlist[date]?.map((l) => {
         // eslint-disable-next-line no-param-reassign
         if (l.id === id) l.checked = action;
-
         return l;
       }),
     });
@@ -200,6 +213,7 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
               id: toTakeAction.id,
               tname: toTakeAction.name,
               tcharge: toTakeAction.charge,
+              unit: 1,
             }],
           };
         }
@@ -209,6 +223,7 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
             id: toTakeAction.id,
             tname: toTakeAction.name,
             tcharge: toTakeAction.charge,
+            unit: 1,
           }],
         };
       });
@@ -221,8 +236,9 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
 
   const setMed = (id: string, action: boolean, date: string):void => {
     setMedlist({
-      [localDate]:
-      medlist[localDate]?.map((l) => {
+      ...medlist,
+      [date]:
+      medlist[date]?.map((l) => {
         // eslint-disable-next-line no-param-reassign
         if (l.id === id) l.checked = action;
 
@@ -267,6 +283,15 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
         };
       });
     } else if (!action && toTakeAction) {
+      const retrievedStock = chosenMed[date].find((e) => e.id === toTakeAction.id)?.count;
+      if (retrievedStock && retrievedStock >= 1) {
+        setLocalStock((prev) => prev.map((e) => {
+          if (e.id === toTakeAction.id) {
+            e.stock += retrievedStock;
+          }
+          return e;
+        }));
+      }
       setChosenMed(
         (prev) => ({ ...prev, [date]: prev[date].filter((e) => e.id !== toTakeAction.id) }),
       );
@@ -313,76 +338,95 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
   });
   const uploadData = (type:string):void => {
     const toUpload = {
-      name: '', phone: '', age: '', address: '', regNum: '', treatments: '', total: 0, medicine: '', images: '', date: startDate, oldTotal: 0, folderId: '', id: '', oldStock: '',
+      name: '', phone: '', age: '', address: '', regNum: '', treatments: '', total: 0, medicine: '', images: '', date: startDate, oldTotal: 0, folderId: '', id: '', oldTreatment: '', oldMedicine: '', remark: '',
     };
     toUpload.name = form.name;
     toUpload.phone = form.phone;
     toUpload.age = form.age;
     toUpload.address = form.address;
     toUpload.regNum = form.reg;
-    // toUpload.treatments = JSON.stringify(chosenTreatment.map((e) => e.id));
-    // toUpload.medicine = JSON.stringify(chosenMed.map((e) => ({ id: e.id, count: e.count })));
+    toUpload.treatments = JSON.stringify(chosenTreatment);
+    toUpload.medicine = JSON.stringify(chosenMed);
     toUpload.total = totalCost;
     toUpload.date = startDate;
+    toUpload.remark = form.remark;
     toUpload.images = JSON.stringify(images);
 
     if (type === 'create') { saveP.mutate(toUpload); } else if (patientdata?.name) {
       toUpload.oldTotal = patientdata.total;
       toUpload.folderId = patientdata.folderId;
-      toUpload.oldStock = JSON.stringify(patientdata.medicine.map((ee, index) => ({
-        id: ee.id,
-        count: patientdata.medCount[index],
-      })));
       toUpload.id = patientdata.id;
       updateP.mutate(toUpload);
     }
   };
   React.useEffect(() => {
     if (patientdata?.name) {
+      const stringAge = patientdata.age.toString();
       setForm({
         reg: patientdata.reg,
         name: patientdata.name,
         phone: patientdata.phone,
-        age: patientdata.age,
+        age: stringAge === '0' ? '' : stringAge,
         address: patientdata.address,
+        remark: patientdata.remark,
       });
-      setStartDate(new Date(patientdata.date));
-      const chosenTreatmentIds:string[] = [];
+      setStartDate(new Date());
 
-      // patientdata.takenTreatment.map((e) => {
-      //   chosenTreatmentIds.push(e.id);
-      //   const toAdd = {
-      //     id: e.id,
-      //     tname: e.tname,
-      //     tcharge: e.cost.toString(),
-      //   };
-      //   return toAdd;
-      // }
-      setChosenTreatment({ ...chosenTreatment, [localDate]: [] });
+      setChosenTreatment(patientdata.pTreatment);
 
-      // if (alltreatment.data) {
-      //   setTreatmentlist(alltreatment.data.map((t) => ({
-      //     id: t.id, label: t.name, checked: chosenTreatmentIds.includes(t.id), charge: t.charge,
-      //   })));
-      // }
-      const medIds: string[] = [];
-      // setChosenMed(patientdata.medicine.map((e) => {
-      //   medIds.push(e.id);
-      //   return {
-      //     id: e.id,
-      //     mname: e.mname,
-      //     price: e.cost.toString(),
-      //     count: e.munit,
-      //     stock: e.stock,
-      //     max: +e.stock + +e.munit,
-      //   };
-      // }));
-      setChosenMed({ ...chosenMed, localDate: [] });
-      // if (allmed.data) {
-      //   setMedlist(allmed.data.map((t) => ({
-      //     id: t.id, label: t.name, checked: medIds.includes(t.id), price: t.price, count: 0, stock: +t.stock, max: +t.stock,
-      //   })));
-      // }
+      patientdata.tDates.forEach((tdate) => {
+        if (alltreatment.data) {
+          setTreatmentlist({
+            [tdate]: alltreatment.data.map((t) => ({
+              id: t.id,
+              label: t.name,
+              checked: (function checkTreatment() {
+                if (chosenTreatment[tdate]) {
+                  let checked = false;
+                  chosenTreatment[tdate].forEach((e) => {
+                    if (e.id === t.id) checked = true;
+                  });
+                  return checked;
+                }
+                return false;
+              }()),
+              charge: t.charge,
+            })),
+          });
+        }
+      });
+
+      setChosenMed(patientdata.pMed);
+      patientdata.mDates.forEach((mdate) => {
+        if (allmed.data) {
+          setMedlist({
+            [mdate]: allmed.data.map((t) => ({
+              id: t.id,
+              label: t.name,
+              checked:
+          (function checkMed() {
+            if (chosenMed[mdate]) {
+              let checked = false;
+              chosenMed[mdate].forEach((e) => {
+                if (e.id === t.id) checked = true;
+              });
+              return checked;
+            }
+            return false;
+          }()),
+              price: t.price,
+              count: 0,
+              stock: (function checkStock() {
+                const find = localStock.find((e) => e.id === t.id);
+                if (find) return find.stock;
+                return 0;
+              }()),
+              max: +t.stock,
+            })),
+          });
+        }
+      });
+
       setImages(patientdata.images.map((e) => ({ dataURL: `${url}/patients/images/${e}` })));
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -419,13 +463,19 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                 <div id="patient-cost">
                   <div id="user-info">
                     <Userphoto />
-                    <div id="total-cost">
-                      Total Cost
-                    </div>
-                    <div id="cost">
-                      {totalCost}
-                      {' '}
-                      MMK
+                    <div
+                      style={{
+                        opacity: user.type === 'admin' ? '1' : '0',
+                      }}
+                    >
+                      <div id="total-cost">
+                        Total Cost
+                      </div>
+                      <div id="cost">
+                        {totalCost}
+                        {' '}
+                        MMK
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -451,7 +501,7 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                     <TextBox
                       label="Age"
                       onInput={(text: string) => { updateForm('age', text); }}
-                      value={form.age}
+                      value={form.age === '0' ? '' : form.age}
                     />
                   </div>
                   <div style={{ width: '100%' }}>
@@ -500,7 +550,7 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                 <Dropdown
                   label="Choose Treatment"
                   list={treatmentlist[localDate]}
-                  width={400}
+                  width={250}
                   dateKey={localDate}
                   setAction={setTreat}
                 />
@@ -508,16 +558,23 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                 }
                     </div>
                     <div className="chosen-treatment">
-                      <div className="label" style={{ textDecoration: 'underline' }}>
-                        Chosen Treatment and Cost
+                      {Object.keys(chosenTreatment).length > 0
+                      && (
+                      <div className="label">
+                        Treatment and Cost
                       </div>
-                      <div className="treatments">
+                      )}
+                      <div
+                        className="treatments"
+                      >
                         {
                   Object.keys(chosenTreatment).length > 0
                   && (
                     Object.keys(chosenTreatment).map((c) => (
 
-                      <div key={c}>
+                      <div
+                        key={c}
+                      >
                         {
                           chosenTreatment[c].length > 0
                           && (
@@ -547,20 +604,67 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                               style={{
                                 position: 'relative',
                                 paddingRight: '20px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                marginBottom: '7px',
                               }}
                             >
                               <span
                                 className="treatment-name"
                                 style={{
                                   display: 'inline-block',
-                                  minWidth: '150px',
+                                  width: '140px',
+                                  textOverflow: 'ellipsis',
                                 }}
                               >
                                 {cc.tname}
 
                               </span>
-                              <span className="treatment-cost">
-                                {cc.tcharge}
+                              <span
+                                className="treatment-unit"
+                                style={{
+                                  display: 'inline-block',
+                                  width: '100px',
+                                }}
+                              >
+                                <InputNumber
+                                  value={cc.unit}
+                                  onIncrease={() => {
+                                    setChosenTreatment({
+                                      ...chosenTreatment,
+                                      [c]: chosenTreatment[c].map((e) => {
+                                        if (e.id === cc.id) {
+                                          e.unit = cc.unit + 1;
+                                        }
+                                        return e;
+                                      }),
+                                    });
+                                  }}
+                                  onDecrease={() => {
+                                    if (cc.unit - 1 > 0) {
+                                      setChosenTreatment({
+                                        ...chosenTreatment,
+                                        [c]: chosenTreatment[c].map((e) => {
+                                          if (e.id === cc.id) {
+                                            e.unit = cc.unit - 1;
+                                          }
+                                          return e;
+                                        }),
+                                      });
+                                    }
+                                  }}
+                                />
+                              </span>
+                              <span
+                                className="treatment-cost"
+                                style={{
+                                  display: 'inline-block',
+                                  textAlign: 'right',
+                                  width: '100px',
+                                  opacity: user.type === 'admin' ? '1' : '0',
+                                }}
+                              >
+                                {+cc.tcharge * +cc.unit}
                                 {' '}
                                 MMK
                               </span>
@@ -572,7 +676,7 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                                 style={{
                                   position: 'absolute',
                                   right: '0',
-                                  top: '-1px',
+                                  top: '1px',
                                 }}
                               >
                                 x
@@ -580,6 +684,41 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                               </span>
                             </div>
                           ))
+                        }
+                        {
+                          chosenTreatment[c].length > 0
+                          && (
+                          <div style={{
+                            borderTop: `0.5px solid ${colors.inputback[theme]}`,
+                            marginTop: '3px',
+                            paddingTop: '3px',
+                            opacity: user.type === 'admin' ? '1' : '0',
+                          }}
+                          >
+                            <span style={{
+                              display: 'inline-block',
+                              fontWeight: 'bold',
+                            }}
+                            >
+                              Total
+
+                            </span>
+                            <span
+                              style={{
+                                fontWeight: 'bold',
+                                color: `${theme === 'dark' ? '#70CF9A' : '#06A17B'}`,
+                                display: 'inline-block',
+                                width: '333.5px',
+                                textAlign: 'right',
+                              }}
+                            >
+                              {chosenTreatment[c].reduce((prev, cur) => prev + Number(+cur.tcharge * cur.unit), 0)}
+                              {' '}
+                              MMK
+
+                            </span>
+                          </div>
+                          )
                         }
                       </div>
                     ))
@@ -599,16 +738,19 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                 <Dropdown
                   label="Choose Medication"
                   list={medlist[localDate]}
-                  width={400}
+                  width={250}
                   dateKey={localDate}
                   setAction={setMed}
                 />
                 )}
                     </div>
                     <div className="chosen-med">
-                      <div className="label" style={{ textDecoration: 'underline' }}>
-                        Chosen Medication and Cost
+                      {Object.keys(chosenMed).length > 0
+                      && (
+                      <div className="label">
+                        Medication and Cost
                       </div>
+                      )}
                       <div className="meds">
                         {
                   Object.keys(chosenMed).length > 0
@@ -644,13 +786,16 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                         style={{
                           position: 'relative',
                           paddingRight: '20px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          marginBottom: '7px',
                         }}
                       >
                         <span
                           className="med-name"
                           style={{
                             display: 'inline-block',
-                            minWidth: '100px',
+                            width: '140px',
                             textOverflow: 'ellipsis',
                           }}
                         >
@@ -660,64 +805,72 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                         <span
                           className="med-unit"
                           style={{
-                            width: '300px',
+                            display: 'inline-block',
+                            width: '100px',
                           }}
                         >
-                          <input
-                            type="number"
-                            min={1}
-                            max={calculateMax(m.id, m.count)}
-                            value={m.count === 0 ? 1 : m.count}
-                            className="med-unit-count"
-                            onKeyDown={(evt) => {
-                              if (evt.key === 'Backspace') {
-                                // eslint-disable-next-line no-param-reassign
-
-                                setMed(m.id, false, e);
-                              }
-                            }}
-                            onChange={(evt) => {
-                              if (m.count < +evt.target.value) {
+                          <InputNumber
+                            value={m.count}
+                            onIncrease={() => {
+                              if (m.count + 1 <= calculateMax(m.id, m.count)) {
                                 setLocalStock((prev) => prev.map((eee) => {
-                                  // eslint-disable-next-line no-param-reassign
+                                // eslint-disable-next-line no-param-reassign
                                   if (eee.id === m.id) eee.stock -= 1;
                                   return eee;
                                 }));
-                              } else {
+                                setChosenMed({
+                                  ...chosenMed,
+                                  [e]: chosenMed[e].map((ee) => {
+                                    if (ee.id === m.id) {
+                                    // eslint-disable-next-line no-param-reassign
+                                      ee.count = m.count + 1;
+                                    }
+                                    return ee;
+                                  }),
+                                });
+                              }
+                            }}
+                            onDecrease={() => {
+                              if (m.count - 1 > 0) {
                                 setLocalStock((prev) => prev.map((eee) => {
-                                  // eslint-disable-next-line no-param-reassign
+                                // eslint-disable-next-line no-param-reassign
                                   if (eee.id === m.id) eee.stock += 1;
                                   return eee;
                                 }));
                                 setMedlist({
                                   [localDate]:
-                                  medlist[localDate]?.map((l) => {
-                                    // eslint-disable-next-line no-param-reassign
-                                    if (l.id === m.id) l.stock = localStock.find((eee) => eee.id === m.id)?.stock ?? 1;
+                                medlist[localDate]?.map((l) => {
+                                  // eslint-disable-next-line no-param-reassign
+                                  if (l.id === m.id) l.stock = localStock.find((eee) => eee.id === m.id)?.stock ?? 1;
 
-                                    return l;
+                                  return l;
+                                }),
+                                });
+                                setChosenMed({
+                                  ...chosenMed,
+                                  [e]: chosenMed[e].map((ee) => {
+                                    if (ee.id === m.id) {
+                                    // eslint-disable-next-line no-param-reassign
+                                      ee.count = m.count - 1;
+                                    }
+                                    return ee;
                                   }),
                                 });
                               }
-                              setChosenMed({
-                                ...chosenMed,
-                                [e]: chosenMed[e].map((ee) => {
-                                  if (ee.id === m.id) {
-                                    // eslint-disable-next-line no-param-reassign
-                                    ee.count = +evt.target.value;
-                                  }
-                                  return ee;
-                                }),
-                              });
-                            }}
-                            style={{
-                              backgroundColor: colors.inputback[theme],
-                              color: colors.text[theme],
                             }}
                           />
+
                         </span>
-                        <span className="med-cost">
-                          {+m.price * m.count}
+                        <span
+                          className="med-cost"
+                          style={{
+                            display: 'inline-block',
+                            width: '100px',
+                            textAlign: 'right',
+                            opacity: user.type === 'admin' ? '1' : '0',
+                          }}
+                        >
+                          {+m.price * m.count }
                           {' '}
                           MMK
                         </span>
@@ -729,7 +882,7 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                           style={{
                             position: 'absolute',
                             right: '0',
-                            top: '2px',
+                            top: '1px',
                           }}
                         >
                           x
@@ -738,6 +891,43 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                       </div>
                     ))
                       }
+                        {
+                          chosenMed[e].length > 0
+                          && (
+                          <div style={{
+                            borderTop: `0.5px solid ${colors.inputback[theme]}`,
+                            marginTop: '3px',
+                            paddingTop: '3px',
+                            opacity: user.type === 'admin' ? '1' : '0',
+                          }}
+                          >
+                            <span style={{
+                              fontWeight: 'bold',
+                              display: 'inline-block',
+                            }}
+                            >
+                              Total
+
+                            </span>
+                            <span
+                              style={{
+                                fontWeight: 'bold',
+                                color: `${theme === 'dark' ? '#70CF9A' : '#06A17B'}`,
+                                display: 'inline-block',
+                                width: '333.5px',
+                                textAlign: 'right',
+                              }}
+                            >
+                              {
+                               chosenMed[e].reduce((prev, cur) => prev + (Number(cur.price) * Number(cur.count)), 0)
+                              }
+                              {' '}
+                              MMK
+
+                            </span>
+                          </div>
+                          )
+                        }
                       </div>
                     ))
                   }
@@ -745,7 +935,33 @@ function CreateModal({ modal, setModal, patientdata }:ICreateModal):ReactElement
                       </div>
                     </div>
                   </div>
-                  <div id="img-area" style={{ width: '100%' }}>
+                  <div>
+                    <div
+                      className="label"
+                      style={{ marginTop: '30px' }}
+                    >
+                      Remark
+                    </div>
+                    <div>
+                      <textarea
+                        id="remark"
+                        style={{
+                          backgroundColor: colors.inputback[theme],
+                          color: colors.text[theme],
+                        }}
+                        spellCheck={false}
+                        value={form.remark}
+                        onChange={(evt) => updateForm('remark', evt.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div
+                    id="img-area"
+                    style={{
+                      width: '100%',
+                      marginTop: '5px',
+                    }}
+                  >
                     <div className="label">
                       Patient Images
                     </div>

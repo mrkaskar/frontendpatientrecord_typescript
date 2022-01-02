@@ -13,10 +13,11 @@ function PatientTable():ReactElement {
   const allpatient = useQuery('patients', getAllPatient);
   const [detailid, setDetailid] = React.useState('initial');
   const [data, setData] = React.useState<{headers:string[], body:string[][]}>({
-    headers: ['Registration', 'Name', 'Phone', 'Age', 'Address', 'Actions'],
+    headers: ['Last Treatment Date', 'Name', 'Phone', 'Age', 'Address', 'Actions'],
     body: [[]],
   });
-  const [chosen, setChosen] = React.useState<
+
+  const [chosenPatient, setChosenPatient] = React.useState<
   {
     id: string
     folderId: string
@@ -27,9 +28,12 @@ function PatientTable():ReactElement {
     address: string
     total: number
     date: string
-    takenTreatment: {id: string, tname: string, cost: number}[]
-    medicine: {id: string, mname: string, munit: number, cost: number, stock: string}[]
-    medCount: number[]
+    pTreatment: {[key: string]:{id: string; tname: string; tcharge: string, unit: number}[]}
+    // eslint-disable-next-line max-len
+    pMed: {[key: string]:{id: string; mname: string; price: string; count: number ; stock: string; max: number}[]}
+    tDates: string[]
+    mDates: string[]
+    remark: string
     images: string[]
   }
   >();
@@ -38,10 +42,10 @@ function PatientTable():ReactElement {
       const patients:string[][] = [];
       allpatient.data.forEach((patient) => {
         patients.push([
-          patient.reg,
+          new Date(patient.date).toDateString(),
           patient.name,
           patient.phone,
-          patient.age,
+          patient.age.toString(),
           patient.address,
           'actions',
           patient.id,
@@ -55,8 +59,40 @@ function PatientTable():ReactElement {
   React.useEffect(() => {
     if (detailid.length >= 10 && data.body.length > 0 && allpatient.data) {
       const patient = allpatient.data.find((e) => e.id === detailid);
+      // eslint-disable-next-line max-len
+      const pTreatment:{[key: string]:{id: string; tname: string; tcharge: string, unit: number}[]} = {};
+      // eslint-disable-next-line max-len
+      const pMed: {[key: string]:{id: string; mname: string; price: string; count: number ; stock: string; max: number}[]} = {};
+
+      if (patient?.treatmentDates && patient?.treatment.length > 0) {
+        for (let i = 0; i < patient?.treatmentDates.length; i += 1) {
+          const key = patient?.treatmentDates[i];
+          if (!pTreatment[key]) { pTreatment[key] = []; }
+          pTreatment[key].push({
+            // eslint-disable-next-line no-underscore-dangle
+            id: patient?.treatment[i]._id,
+            tname: patient?.treatment[i].name,
+            tcharge: patient?.treatment[i].charge,
+            unit: patient?.treCount[i],
+          });
+        }
+      }
+      if (patient?.medDates && patient?.medicine.length > 0) {
+        for (let i = 0; i < patient?.medDates.length; i += 1) {
+          const key = patient?.medDates[i];
+          if (!pMed[key]) { pMed[key] = []; }
+          pMed[key].push({
+          // eslint-disable-next-line no-underscore-dangle
+            id: patient?.medicine[i]._id,
+            mname: patient?.medicine[i].name,
+            price: patient?.medicine[i].price,
+            count: patient?.medCount[i],
+            stock: patient?.medicine[i].stock,
+            max: +patient?.medicine[i].stock,
+          });
+        }
+      }
       if (patient) {
-        const { treatment } = patient;
         const chosenP = {
           id: patient.id,
           folderId: patient.folderId,
@@ -67,21 +103,14 @@ function PatientTable():ReactElement {
           address: patient.address,
           total: patient.total,
           date: patient.date,
-          // eslint-disable-next-line no-underscore-dangle
-          takenTreatment: treatment.map((ee) => ({ id: ee._id, tname: ee.name, cost: +ee.charge })),
-          // eslint-disable-next-line max-len
-          medicine: patient.medicine.map((ee, index) => ({
-          // eslint-disable-next-line no-underscore-dangle
-            id: ee._id,
-            mname: ee.name,
-            munit: patient.medCount[index],
-            cost: +ee.price,
-            stock: ee.stock,
-          })),
-          medCount: patient.medCount,
+          pTreatment,
+          pMed,
+          tDates: patient.treatmentDates,
+          mDates: patient.medDates,
+          remark: patient.remark,
           images: patient.images,
         };
-        setChosen(chosenP);
+        setChosenPatient(chosenP);
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -96,33 +125,33 @@ function PatientTable():ReactElement {
     },
   });
   const todelete = ():void => {
-    if (chosen) {
+    if (chosenPatient) {
       setTimeout(() => {
-        setData({ ...data, body: data.body.filter((e) => e[6] !== chosen.id) });
+        setData({ ...data, body: data.body.filter((e) => e[6] !== chosenPatient.id) });
       }, 100);
       setTimeout(() => {
         queryClient.removeQueries('patients');
       }, 100);
-      deleteP.mutate({ id: chosen.id, folderId: chosen.folderId });
+      deleteP.mutate({ id: chosenPatient.id, folderId: chosenPatient.folderId });
     }
   };
   return (
     <div>
 
       {
-      detailModal && chosen && (
+      detailModal && chosenPatient && (
       <DetailModal
-        userdata={chosen}
+        userdata={chosenPatient}
         setDetailModal={setDetailModal}
       />
       )
     }
       {
-      editModal && chosen && (
+      editModal && chosenPatient && (
         <CreateModal
           modal={editModal}
           setModal={setEditModal}
-          patientdata={chosen}
+          patientdata={chosenPatient}
         />
       )
     }

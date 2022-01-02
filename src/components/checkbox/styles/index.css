@@ -1,11 +1,11 @@
-#checkbox{
+#checkbox {
   display: flex;
   margin-bottom: 2px;
 }
 
-#clabel{
+#clabel {
   display: block;
-  margin-top: 4px;
+  margin-top: 5px;
   font-size: 12px;
   cursor: pointer;
   transition: 0.1s;
@@ -14,8 +14,7 @@
   padding-right: 1px;
 }
 
-
-.checkwrap{
+.checkwrap {
   width: 25px;
   height: 25px;
   border-radius: 50%;

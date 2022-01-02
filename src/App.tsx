@@ -39,6 +39,7 @@ function App():JSX.Element {
         });
       } catch (e) {
         setAuth(true);
+        // eslint-disable-next-line max-len
         if (path[path.length - 1] === 'login' || path[path.length - 1] === 'login#') { setError('This user is not authenticated! Try with another user'); }
         throw e;
       }
