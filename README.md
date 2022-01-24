@@ -13,7 +13,14 @@
 1. Generalizing for reusing the components such as custom table and custom dropbox
 2. Handling complex data structure such as date related to treaments and medicine
 
-### Project features
+## Tech Stack
+> React JS
+
+> Typescript
+
+> React Query
+
+### Features
 1. User can login with google account if the user is in the list as an admin or a casher. 
 2. Dashboard showing clinic information such as total patients, revenue etc.
 3. New patients can be added with their respective information such as treatment, and medicine according to date along with photos.
