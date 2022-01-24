@@ -1,6 +1,6 @@
 # Dental Patient Record front end project with React
 ### Development Steps
-1. Designing with Figma for both light and dark theme
+1. Designing for UX and UI with Figma for both light and dark theme
 2. Collecting assets
 3. Develop custom components (checkbox, button, table, etc) 
 4. Layout the components at the screens
