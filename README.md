@@ -29,6 +29,6 @@
 ***Dark Theme***
 ![Dashboard](https://i.ibb.co/Rh9FV3R/screenbud-e0de2b51-480d-477b-a99c-9cfd68a11449.png)
 ***Patient Create and Edit***
-![Cretate Patient](https://i.ibb.co/M5t7DN2/screenbud-8c09111a-9936-44fa-acef-67870452e613.png)
+![Cretate Patient](https://i.ibb.co/H4dfVWD/screenbud-10cb068e-ee0f-4d0e-8234-ab740add7620.png)
 ***Patient Table***
-![Cretate Patient](https://i.ibb.co/jGBn8sD/screenbud-3ec9f916-4bfb-43f2-9911-4edb771b4a7e.png)
+![Patient Table](https://i.ibb.co/jGBn8sD/screenbud-3ec9f916-4bfb-43f2-9911-4edb771b4a7e.png)
