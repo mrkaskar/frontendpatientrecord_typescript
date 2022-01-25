@@ -1,7 +1,8 @@
 # Dental Patient Record front end project with React
 ### Skill level
-UXUI - Medium (Modern)
-Coding - Medium
+**UXUI** - Medium (Modern)
+
+**Coding** - Medium
 
 ### Development Steps
 1. Designing **UX and UI** with Figma for both light and dark theme
