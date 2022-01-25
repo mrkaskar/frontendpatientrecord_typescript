@@ -1,4 +1,8 @@
 # Dental Patient Record front end project with React
+### Skill level
+UXUI - Medium (Modern)
+Coding - Medium
+
 ### Development Steps
 1. Designing **UX and UI** with Figma for both light and dark theme
 2. Collecting assets
@@ -35,7 +39,9 @@
 
 ***Dark Theme***
 ![Dashboard](https://i.ibb.co/Rh9FV3R/screenbud-e0de2b51-480d-477b-a99c-9cfd68a11449.png)
+
 ***Patient Create and Edit***
 ![Cretate Patient](https://i.ibb.co/H4dfVWD/screenbud-10cb068e-ee0f-4d0e-8234-ab740add7620.png)
+
 ***Patient Table***
 ![Patient Table](https://i.ibb.co/jGBn8sD/screenbud-3ec9f916-4bfb-43f2-9911-4edb771b4a7e.png)
